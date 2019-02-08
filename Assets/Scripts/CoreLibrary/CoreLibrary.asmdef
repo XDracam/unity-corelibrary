@@ -1,0 +1,7 @@
+﻿{
+    "name": "CoreLibrary",
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
