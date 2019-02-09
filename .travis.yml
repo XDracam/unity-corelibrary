@@ -1,0 +1,22 @@
+os: osx
+osx_image: xcode9.2
+language: swift
+
+before_install:
+        - mkdir -p scripts/download
+        - travis_retry curl -sL -o scripts/download/build.sh https://raw.githubusercontent.com/andrewlord1990/unity-package-build-script/master/scripts/build.sh
+        - travis_retry curl -sL -o scripts/download/clean.sh https://raw.githubusercontent.com/andrewlord1990/unity-package-build-script/master/scripts/clean.sh
+        - travis_retry curl -sL -o scripts/download/export-package.sh https://raw.githubusercontent.com/andrewlord1990/unity-package-build-script/master/scripts/export-package.sh
+        - travis_retry curl -sL -o scripts/download/install-unity.sh https://raw.githubusercontent.com/andrewlord1990/unity-package-build-script/master/scripts/install-unity.sh
+        - travis_retry curl -sL -o scripts/download/prepare-release.sh https://raw.githubusercontent.com/andrewlord1990/unity-package-build-script/master/scripts/prepare-release.sh
+        - travis_retry curl -sL -o scripts/download/run-tests.sh https://raw.githubusercontent.com/andrewlord1990/unity-package-build-script/master/scripts/run-tests.sh
+        - chmod a+x ./scripts/*/*.sh
+
+install:
+        - travis_retry ./scripts/download/install-unity.sh
+
+script:
+        - ./scripts/download/build.sh CoreLibrary && ./scripts/download/run-tests.sh CoreLibrary
+
+after_success:
+        - ./scripts/download/export-package.sh CameronReuschel CoreLibrary
