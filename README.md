@@ -37,7 +37,7 @@ if (AssignIfAbsent(ref rigidbody)) { /* newly assigned, do sth */ }
 var list1 = new List<int> { 1, 2, 3 };
 var list2 = new List<int> { 4, 5, 6 };
 
-list2.ForEach(Debug.Log);
+list2.Where(v => v % 2 == 0).ForEach(Debug.Log);
 
 list1.AndAlso(list2);     // IEnumerable<int> { 1, 2, 3, 4, 5, 6 }
 
