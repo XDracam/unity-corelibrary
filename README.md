@@ -1,5 +1,4 @@
 # The Unity CoreLibrary
-![Build Status](https://travis-ci.org/XDracam/unity-corelibrary.svg?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 The *CoreLibrary* is a collection of classes and extension methods you didn't even know you were missing. It provides generic, well-tested, well-documented components such as a Pool implementation and object queries as well as numerous extension methods and utilities that make your everyday code cleaner and more type safe.
