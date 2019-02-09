@@ -26,7 +26,8 @@ namespace CoreLibrary.Tests
 
         [Test]
         public void TestSetPerceivable()
-        {
+        { // TODO: test 2D colliders as well
+            
             var go = new GameObject();
             var c1 = new GameObject();
             var c2 = new GameObject();
