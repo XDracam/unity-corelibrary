@@ -42,5 +42,3 @@ var resources = Query.AllWith<Resource>(typeof(Interactable));
 ```
 
 `.AllWith` takes at least one additional type bound, but can take as many as you want. The queried objects need to have at least one component of each of the specified types in order to be found.
-
-\newpage

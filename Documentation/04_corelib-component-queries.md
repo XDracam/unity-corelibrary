@@ -125,5 +125,3 @@ shipsHit.ForEach(hit => hit.rigidbody.useGravity(true));
 As you can see, `Is`, `As` and `All` make the code more concise but they as well as complex searches much easier! `.Collect` is a nice shortcut to lose the null checks. `.ForEach` depends on one's taste. I personally prefer it to an additional variable and a loop.
 
 All three methods are available as extensions to both `GameObject` and `Transform` classes for convenience.
-
-\newpage

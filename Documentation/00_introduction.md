@@ -29,5 +29,3 @@ Fell free to add any issue, forgotten edge cases or feature wishes as an [Issue 
 I'll also gladly accept any pull requests.
 
 **Enjoy.**
-
-\newpage

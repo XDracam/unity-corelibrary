@@ -686,6 +686,4 @@ IEnumerator BrokenYieldWhile(IEnumerator wrapped, Condition cond)
 BrokenYieldWhile(a(), () => _running).Start();
 ```
 
-In the above case the Unity runtime executes the whole `b()` coroutine before `BrokenYieldWhile` checks the condition and has a chance to interrupt. This means that, unintuitively, `DoSomethingDangerous` is actually called. And for this reason, we need `.Flatten()`. 
-
-\newpage
+In the above case the Unity runtime executes the whole `b()` coroutine before `BrokenYieldWhile` checks the condition and has a chance to interrupt. This means that, unintuitively, `DoSomethingDangerous` is actually called. And for this reason, we need `.Flatten()`.

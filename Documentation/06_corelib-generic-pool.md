@@ -166,5 +166,3 @@ This decision comes at a cost: When the user configures a pool in the inspector 
 ### Slow Growth
 
 When a pool runs out of available items, it's capacity increases by a factor of `GrowRate`. If we created all items at the moment of growth we would cause a potential freeze. And we do not want freezes. For this reason, the pool only grows by *one item per frame*. When the pool is still growing and another item is requested, it is instantly instantiated on demand.
-
-\newpage

@@ -159,5 +159,3 @@ Some hints:
 ## LazySingleton
 
 While `Singleton` throws an exception when it can't find an object, `LazySingleton` instantiates a new empty `GameObject` with only the requested component attached to it. This is especially useful for objects that are required in every scene but are easily forgotten. It otherwise behaves exactly like `Singleton`.
-
-\newpage

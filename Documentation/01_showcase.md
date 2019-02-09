@@ -1,5 +1,3 @@
 # Showcase
 
 Coming soon.
-
-\newpage

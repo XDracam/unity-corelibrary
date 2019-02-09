@@ -115,5 +115,3 @@ allMyYellowCats.AndAlso(allMyBrownCats)
 ```
 
 Which one you use is a matter of taste and code style. Generally, I would prefer using `foreach` unless I want to use a direct method reference or single expression. Just don't use `for`.
-
-\newpage
