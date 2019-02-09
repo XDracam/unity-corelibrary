@@ -83,7 +83,7 @@ namespace CoreLibrary.Tests
         [Test]
         public void TestAndAlso()
         {
-            var l1 = new List<Collider> {new MeshCollider(), new TerrainCollider()};
+            var l1 = new List<Collider> {new MeshCollider(), new CapsuleCollider()};
             var l2 = new List<Collider> {new BoxCollider(), new SphereCollider()};
 
             var res = l1.AndAlso(l2).ToList();

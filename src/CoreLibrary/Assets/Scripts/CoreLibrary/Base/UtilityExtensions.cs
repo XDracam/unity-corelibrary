@@ -39,8 +39,10 @@ namespace CoreLibrary
                 return;
             var allRenderer = gameObject.All<Renderer>(Search.InChildren);
             var allCollider = gameObject.All<Collider>(Search.InChildren);
+            var allCollider2D = gameObject.All<Collider2D>(Search.InChildren);
             foreach(var rend in allRenderer) rend.enabled = state;
             foreach(var col in allCollider) col.enabled = state;
+            foreach(var col in allCollider2D) col.enabled = state;
         }
 
         //=============================

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\Cameron\.Rider2018.2\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Cameron\.Rider2018.2\system\resharper-host\Local\Transient\ReSharperHost\v182\SolutionCaches\_CoreLibrary.2029211068.00" t="ExcludeRecursive" />
+    <e p="C:\Users\Cameron\Desktop\CoreLibrary" t="IncludeFlat">
+      <e p="CoreLibrary.sln" t="IncludeFlat" />
+      <e p="Library" t="ExcludeRecursive" />
+      <e p="Temp" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>
