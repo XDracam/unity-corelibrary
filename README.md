@@ -3,6 +3,8 @@
 
 The *CoreLibrary* is a collection of classes and extension methods you didn't even know you were missing. It provides generic, well-tested, well-documented components such as a Pool implementation and object queries as well as numerous extension methods and utilities that make your everyday code cleaner and more type safe.
 
+This project is being developed primarily at theUuniveristy of Würzburg, Germany for the [Cavelands](http://cavelands.de/) student project. It remains free and open source for all Games Engineering students as well as anyone else who wants to use it. 
+
 The main goal is to encourage the *good sides* of functional programming:
 
 - Usage of first class functions (delegates)
