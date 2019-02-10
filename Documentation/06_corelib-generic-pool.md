@@ -78,7 +78,7 @@ In the example above, instead of configuring the pool in the Unity inspector we 
 
 When the pool does not find any item to reuse (which never happens in our example, why later), it's behaviour depends on the value of `GrowRate`. You see, in order to prevent glitches when there suddenly are no bullet lefts, the pool **grows** similar to the way a `List<T>` grows it's underlying array. When an item is requested but there are no free items to be found, the pool grows by a factor of `GrowRate`. Per default, `GrowRate` is set to `0.3`. There is a rough estimation. *If you know better, set it yourself.*
 
-In the above case, since we never run out of bullets, we set `GrowRate = 0`. Now when we run out of bullets due to a bug, an `Error` is thrown to signal that something went wrong.
+In the above case, since we never run out of bullets, we set `GrowRate = 0`. Now when we run out of bullets due to a bug, an `PoolOutOfItemsException` is thrown to signal that something went wrong.
 
 ## Usage from the Inspector
 

@@ -1,6 +1,4 @@
-using CoreLibrary;
-
-namespace CoreLibrary.Pool
+namespace CoreLibrary
 {
     /// <summary>
     /// Author: Cameron Reuschel

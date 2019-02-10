@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CoreLibrary.Pool
+namespace CoreLibrary
 {
     /// <summary>
     /// Author: Cameron Reuschel
@@ -134,13 +134,17 @@ namespace CoreLibrary.Pool
         }
 
         /// <returns>An instance of the <see cref="TemplateObject"/> prefab, active and at the origin.</returns>
-        /// <exception cref="Exception">If no items available and GrowRate == 0</exception>
+        /// <exception cref="PoolOutOfItemsException">
+        /// If no items are available and GrowRate == 0
+        /// </exception>
         /// <seealso cref="RequestItem(Vector3)"/>
         /// <seealso cref="RequestItem(Vector3, Quaternion)"/>
         public GameObject RequestItem() { return RequestItem(Vector3.zero, Quaternion.identity); }
 
         /// <returns>An instance of the <see cref="TemplateObject"/> prefab, active and at the specified position.</returns>
-        /// <exception cref="Exception">If no items available and GrowRate == 0</exception>
+        /// <exception cref="PoolOutOfItemsException">
+        /// If no items are available and GrowRate == 0
+        /// </exception>
         /// <seealso cref="RequestItem()"/>
         /// <seealso cref="RequestItem(Vector3, Quaternion)"/>
         public GameObject RequestItem(Vector3 position) { return RequestItem(position, Quaternion.identity); }
@@ -148,7 +152,9 @@ namespace CoreLibrary.Pool
         /// <returns>
         /// An instance of the <see cref="TemplateObject"/> prefab,
         /// active and with the specified position and rotation.</returns>
-        /// <exception cref="Exception">If no items available and GrowRate == 0</exception>
+        /// <exception cref="PoolOutOfItemsException">
+        /// If no items are available and GrowRate == 0
+        /// </exception>
         /// <seealso cref="RequestItem()"/>
         /// <seealso cref="RequestItem(Vector3)"/>
         public GameObject RequestItem(Vector3 position, Quaternion rotation)
@@ -168,7 +174,7 @@ namespace CoreLibrary.Pool
                 var t = _buffer[ii];
                 if (t.CanBeReused && !t.gameObject.activeSelf)
                 {
-                    _lastIndex = i;
+                    _lastIndex = ii;
                     return Reuse(t, position, rotation);
                 }
             }
@@ -180,7 +186,7 @@ namespace CoreLibrary.Pool
                 var t = _buffer[ii];
                 if (t.CanBeReused)
                 {
-                    _lastIndex = i;
+                    _lastIndex = ii;
                     return Reuse(t, position, rotation);
                 }
             }
@@ -195,14 +201,14 @@ namespace CoreLibrary.Pool
                 t.ReuseRequested();
                 if (t.CanBeReused)
                 {
-                    _lastIndex = i;
+                    _lastIndex = ii;
                     return Reuse(t, position, rotation);
                 }
             }
 
             // ... else if it is not supposed to grow, fail ...
             if (Math.Abs(GrowRate) < Mathf.Epsilon)
-                throw new Exception(
+                throw new PoolOutOfItemsException(
                     this + ": Requesting a " + TemplateObject + " with buffer capacity " + Capacity +
                     " failed and GrowRate is set to 0. No more items available.");
             

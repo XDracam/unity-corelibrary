@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CoreLibrary.Pool;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -39,10 +38,10 @@ namespace CoreLibrary.Tests.GenericPool
     /// </summary>
     public class TestGenericPool
     {
-        private static Pool.GenericPool NewPool(int capacity, Type toAdd = null)
+        private static CoreLibrary.GenericPool NewPool(int capacity, Type toAdd = null)
         {
             var go = new GameObject();
-            var pool = go.AddComponent<Pool.GenericPool>();
+            var pool = go.AddComponent<CoreLibrary.GenericPool>();
             pool.Capacity = capacity;
             pool.GrowRate = 1;
             var templateGo = new GameObject {name = "Template Object"};
@@ -81,10 +80,10 @@ namespace CoreLibrary.Tests.GenericPool
             Assert.AreSame(fth, trd);
         }
 
-        private static int GetBufferSize(Pool.GenericPool pool)
+        private static int GetBufferSize(CoreLibrary.GenericPool pool)
         {
             return ((List<Reusable>) 
-                typeof(Pool.GenericPool)
+                typeof(CoreLibrary.GenericPool)
                     .GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
                     .First(f => f.Name == "_buffer")
                     .GetValue(pool)).Count;
@@ -129,7 +128,7 @@ namespace CoreLibrary.Tests.GenericPool
             var uut = NewPool(0);
             uut.GrowRate = 0;
             uut.Init();
-            Assert.Throws<Exception>(() => uut.RequestItem());
+            Assert.Throws<PoolOutOfItemsException>(() => uut.RequestItem());
         }
 
         private class AlwaysReusable : TestReusable

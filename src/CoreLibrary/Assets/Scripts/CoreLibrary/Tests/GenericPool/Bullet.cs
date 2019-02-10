@@ -1,6 +1,4 @@
-﻿using CoreLibrary.Pool;
-
-namespace CoreLibrary.Tests.GenericPool
+﻿namespace CoreLibrary.Tests.GenericPool
 {
 	/// <summary>
 	/// Author: Cameron Reuschel
