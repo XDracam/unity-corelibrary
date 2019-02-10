@@ -91,9 +91,9 @@ It is important to note that just calling `LaunchRoutine` returns an `IEnumerato
 
 **TL;DR: Never forget to call `StartCoroutine()` or `.Start()`!**
 
-Because forgetting the `StartCoroutine` call is such a common mistake that can't be caught by the type system, it is a *good design practice* to make the coroutine implementation private and provide a public method (here `Launch()`), that just takes care of starting the coroutine. 
+Because forgetting the `StartCoroutine` call is such a common mistake that can't be caught by the type system, it is a *good design practice* to make the coroutine implementation private and provide a public method (here `Launch()`), that just takes care of starting the coroutine.
 
-Now imagine multiple of these method-implementation pairs in a single component: Without a lot of discipline this quickly becomes mess. Especially when you are having a lot of `private IEnumerator ...` methods that just wait a few seconds before executing code. For reasons like this we provide a number of *coroutine control and composition structures*. These enable you to replace almost all `private IEnumerator ...` methods with *anonymous functions (lambdas)*. Consider the above example with the Core Library:
+Now imagine multiple of these method-implementation pairs in a single component: Without a lot of discipline this quickly becomes a mess. Especially when you are having a lot of `private IEnumerator ...` methods that just wait a few seconds before executing code. For reasons like this we provide a number of *coroutine control and composition structures*. These enable you to replace almost all `private IEnumerator ...` methods with *anonymous functions (lambdas)*. Consider the above example with the Core Library:
 
 ```cs
 // with CoreLibrary features
@@ -141,7 +141,9 @@ The notation `() => doSomething()` is called an *anonymous function* or *lambda*
 
 An alternative to writing `() => doSomething()` is `() => {return doSomething();}`. By using curly braces after the arrow you can use more than one statement in a lambda, using them to pass more complex blocks of code to our custom control structures.
 
-The `fixedUpdate: true` is a named parameter. In the case above we could just write `true`, but prefixing boolean parameters with the argument name makes the code more readable. Every control structure that executes code every frame has an optional `fixedUpdate` parameter as last argument which defaults to false. 
+The `fixedUpdate: true` is a named parameter. In the case above we could just write `true`, but prefixing boolean parameters with the argument name makes the code more readable. Every control structure that executes code every frame has an optional `fixedUpdate` parameter as last argument which defaults to false.
+
+The goal of this module is to *keep the definition in a concurrent task as local as possible*, as the more state a class has, the harder it is to understand what it is actually doing. And having the definition for a single task in one place is much easier to understand than when you have to jump between `private` functions and keep parameters and fields in mind.
 
 The rest of this page explains our coroutine utilities by first presenting some regular Unity code followed by what you would replace it with.
 
@@ -400,12 +402,6 @@ public void LockAndFollow()
 
 `RepeatWhile` does *not* execute the passed action when the condition is already `false`.
 
-## Do
-
-For completeness, the CoreLibrary provides `IEnumerable Do(YieldAction action)`. A `YieldAction` is a function which takes no arguments and returns something, whatever it is. `Do` turns this function into a coroutine: It executes the function and `yield return`s the result of the function. The use of `Do` can mostly be avoided by using the right design. 
-
-*`Do` is a constructor for a singleton coroutine: One that only generates a single result.*
-
 ## .Afterwards and .YieldWhile
 
 The above example also shows the usage of `.Afterwards(code)`, which can be called on an existing IEnumerator (= not started coroutine). The passed code is executed after the coroutine it is called on runs out, regardless of how it ends. **Even if an exception is thrown!** `.Afterwards` is often used for some cleanup code. The resulting IEnumerator must still be passed to `StartCoroutine()` or `.Start()`. The passed code takes the form of a lambda without arguments. 
@@ -587,7 +583,7 @@ This is the reason why the `afterwards` parameter is always optional.
 
 ## DoBefore
 
-Imagine a use case where you wanted to execute some code before using `RepeatWhile`, regardless of whether the passed condition is initially false or not. When you want to immediately start the constructed coroutine, that is no problem:
+Imagine a use case where you wanted to execute some code before using `RepeatWhile` or `.YieldWhile`, regardless of whether the passed condition is initially false or not. When you want to immediately start the constructed coroutine, that is no problem:
 
 ```cs
 private bool _isRunning = false;
@@ -622,6 +618,149 @@ public void Run() => DoBefore(
         () => _isRunning, 
         () => DoSomething()
     ));
+```
+
+## Do
+
+For completeness, the CoreLibrary provides 
+```cs
+IEnumerable Do(YieldAction action)
+```
+A `YieldAction` is a function which takes no arguments and returns something, whatever it is. `Do` turns this function into a coroutine: It executes the function and `yield return`s the result of the function. The use of `Do` can mostly be avoided by using the right design. 
+
+*`Do` is a constructor for a singleton coroutine: One that only generates a single result.*
+
+## Repeat
+
+If all the previous methods do not fit your need for a repetition, for example when the yielded values alternate between iterations, the CoreLibrary provides
+
+```cs
+IEnumerable Repeat(YieldAction action, int? times = null)
+```
+
+This is the most generic form of executing code over time without actually writing `yield return` yourself. The `times` parameter is optional, and if you omit it, the coroutine will run forever. You can further bind the repetition to a condition using `.YieldWhile`.
+
+```cs
+// -- before (naive)
+
+public class RoadTrip : MonoBehaviour
+{
+    /* ... */
+
+    private bool _inProgress = false;
+
+    public float MinQuestionInterval;
+    public float MaxQuestionInterval;
+
+    private float _nextQuestionTime = 0f;
+
+    private float RandomInterval()
+    {
+        var boundsDiff = MaxQuestionInterval - MinQuestionInterval;
+        var intervalDiff = Random.value * boundsDiff;
+        return MinQuestionInterval + intervalDiff;
+    }
+
+    public void StartRoadTrip()
+    {
+        /* ... */
+        _inProgress = true;
+        _nextQuestionTime = Time.time + RandomInterval();
+    }
+
+    private void Update()
+    {
+        if (_inProgress && Time.time > _nextQuestionTime)
+        {
+            Say("Are we there yet?");
+            _nextQuestionTime = Time.time + RandomInterval();
+        }
+
+        /* ... */
+    }
+}
+```
+
+```cs
+// -- before (with coroutine)
+
+public class RoadTrip : MonoBehaviour
+{
+    /* ... */
+
+    private bool _inProgress = false;
+
+    public float MinQuestionInterval;
+    public float MaxQuestionInterval;
+
+    private float RandomInterval()
+    {
+        var boundsDiff = MaxQuestionInterval - MinQuestionInterval;
+        var intervalDiff = Random.value * boundsDiff;
+        return MinQuestionInterval + intervalDiff;
+    }
+
+    private IEnumerator QuestionRoutine()
+    {
+        while (_inProgress) {
+            yield return new WaitForSeconds(RandomInterval());
+            Say("Are we there yet?");
+        }
+    }
+
+    public void StartRoadTrip()
+    {
+        /* ... */
+        _inProgress = true;
+        StartCoroutine(QuestionRoutine());
+    }
+
+    private void Update()
+    {
+        /* ... */
+    }
+}
+```
+
+```cs
+// -- after
+
+using static CoreLibrary.Coroutines;
+
+public class RoadTrip : BaseBehaviour
+{
+    /* ... */
+
+    private bool _inProgress = false;
+
+    public float MinQuestionInterval;
+    public float MaxQuestionInterval;
+
+    private float RandomInterval()
+    {
+        var boundsDiff = MaxQuestionInterval - MinQuestionInterval;
+        var intervalDiff = Random.value * boundsDiff;
+        return MinQuestionInterval + intervalDiff;
+    }
+
+    public void StartRoadTrip()
+    {
+        /* ... */
+        _inProgress = true;
+
+        WaitForSeconds(RandomInterval()).AndThen(
+            Repeat(() => {
+                Say("Are we there yet?");
+                return new WaitForSeconds(RandomInterval());
+            }).YieldWhile(() => _inProgress)
+        ).Start();
+    }
+
+    private void Update()
+    {
+        /* ... */
+    }
+}
 ```
 
 ## .Flatten

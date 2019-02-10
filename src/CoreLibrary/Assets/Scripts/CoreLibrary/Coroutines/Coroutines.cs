@@ -219,6 +219,38 @@ namespace CoreLibrary
         }
 
         /// <summary>
+        /// Repeats the passed <see cref="YieldInstruction"/> either the
+        /// specified number of times or forever if not specified.
+        /// <br/><br/>
+        /// You can use <see cref="YieldWhile"/> to repeat your custom
+        /// action until a condition is met. This is different from
+        /// <see cref="RepeatWhile"/> and <see cref="RepeatEverySeconds"/>
+        /// in that you can be more specific about what you want to yield
+        /// between repetitions. 
+        /// </summary>
+        /// <example><code>
+        /// var launch = Repeat(() => {
+        ///     _rb.AddForce(Vector3.up * Push);
+        ///     return new WaitForFixedUpdate();
+        /// }, (int) (LaunchTime / Time.fixedDeltaTime));
+        ///
+        /// var areWeThereYet = Repeat(() => {
+        ///     Say("Are we there yet?");
+        ///     return new WaitForSeconds(Interval);
+        /// }).YieldWhile(NotThere); 
+        /// </code></example>
+        /// <param name="action">
+        /// The action containing a single step of a coroutine and returns a value to be yielded repeatedly.
+        /// </param>
+        /// <param name="times">
+        /// The optional number of times the passed action is called and yielded.
+        /// </param>
+        public static IEnumerator Repeat([NotNull] YieldAction action, [CanBeNull] int? times = null)
+        {
+            for (var i = 0; i != times; ++i) yield return action();
+        }
+
+        /// <summary>
         /// Prepends an action to an existing coroutine.
         /// Especially useful in combination with <see cref="YieldWhile"/>
         /// and <see cref="RepeatWhile"/> in order to execute code even if
@@ -233,7 +265,6 @@ namespace CoreLibrary
         /// </code></example>
         /// <param name="action">The code to execute before the passed coroutine.</param>
         /// <param name="coroutine">The coroutine to prepend the action to.</param>
-        /// <returns></returns>
         public static IEnumerator DoBefore([NotNull] CodeBlock action, IEnumerator coroutine)
         {
             action();
@@ -360,8 +391,7 @@ namespace CoreLibrary
         [Pure] public static IEnumerator RepeatEverySeconds(float interval, [NotNull] CodeBlock action, 
             int? repetitions = null)
         {
-            int limit = repetitions ?? -1;
-            for (var i = 0; i != limit; ++i)
+            for (var i = 0; i != repetitions; ++i)
             {
                 action();
                 yield return new WaitForSeconds(interval);

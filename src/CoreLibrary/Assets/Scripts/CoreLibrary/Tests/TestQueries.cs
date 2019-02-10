@@ -7,7 +7,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
-using Queryable = CoreLibrary.Queryable;
 
 namespace CoreLibrary.Tests
 {

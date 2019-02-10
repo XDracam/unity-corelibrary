@@ -279,6 +279,42 @@ namespace CoreLibrary.Tests
             Assert.IsFalse(called);
         }
 
+        [UnityTest]
+        public IEnumerator TestRepeat()
+        {
+            var c = 0;
+            Coroutines.Repeat(() =>
+            {
+                c++;
+                return null;
+            }, 3).Start();
+            
+            Assert.AreEqual(1, c);
+            yield return null;
+            Assert.AreEqual(2, c);
+            yield return null;
+            Assert.AreEqual(3, c);
+            yield return null;
+            Assert.AreEqual(3, c);
+
+            var done = false;
+            c = 0;
+            Coroutines.Repeat(() =>
+            {
+                c++;
+                return new WaitForSeconds(.5f);
+            }).YieldWhile(() => !done).Start();
+            
+            Assert.AreEqual(1, c);
+            yield return new WaitForSeconds(.6f);
+            Assert.AreEqual(2, c);
+            yield return new WaitForSeconds(.6f);
+            Assert.AreEqual(3, c);
+            done = true;
+            yield return new WaitForSeconds(.6f);
+            Assert.AreEqual(3, c);
+        }
+
         [Test]
         public void TestFlatten()
         {
