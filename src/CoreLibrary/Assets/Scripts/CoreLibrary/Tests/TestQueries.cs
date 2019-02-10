@@ -111,7 +111,7 @@ namespace CoreLibrary.Tests
 			yield return null;
 			Assert.Contains(typeof(TestBehaviour), _registered.Keys);
 			Assert.Contains(tb, _registered[typeof(TestBehaviour)].ToList());
-			Assert.AreEqual(new List<Queryable>{q2}, _enabled.ToList());
+			CollectionAssert.AreEquivalent(new List<Queryable>{q2}, _enabled.ToList());
 			
 			go.SetActive(true);
 			yield return null;
@@ -129,8 +129,8 @@ namespace CoreLibrary.Tests
 			
 			Object.Destroy(go);
 			yield return null;
-			Assert.AreEqual(new List<QueryableBaseBehaviour> {tb2}, _registered[typeof(TestBehaviour)].ToList());
-			Assert.AreEqual(new List<Queryable>{q2}, _enabled.ToList());
+			CollectionAssert.AreEquivalent(new List<QueryableBaseBehaviour> {tb2}, _registered[typeof(TestBehaviour)].ToList());
+			CollectionAssert.AreEquivalent(new List<Queryable>{q2}, _enabled.ToList());
 			
 			TearDown();
 		}
@@ -140,29 +140,29 @@ namespace CoreLibrary.Tests
 		{
 			yield return Setup();
 
-			Assert.AreEqual(new List<TestBehaviour>{tb}, Query.All<TestBehaviour>().ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tb}, Query.All<TestBehaviour>().ToList());
 			
 			go.SetActive(false);
 			yield return null;
-			Assert.AreEqual(new List<TestBehaviour>{tb}, Query.All<TestBehaviour>().ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tb}, Query.All<TestBehaviour>().ToList());
 			
 			TearDown();
 
 			yield return Setup2();
 			
-			Assert.AreEqual(new List<TestBehaviour>{tb, tb2}, Query.All<TestBehaviour>().ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tb, tb2}, Query.All<TestBehaviour>().ToList());
 			
 			go.SetActive(false);
 			yield return null;
-			Assert.AreEqual(new List<TestBehaviour>{tb, tb2}, Query.All<TestBehaviour>().ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tb, tb2}, Query.All<TestBehaviour>().ToList());
 			
 			go2.SetActive(false);
 			yield return null;
-			Assert.AreEqual(new List<TestBehaviour>{tb, tb2}, Query.All<TestBehaviour>().ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tb, tb2}, Query.All<TestBehaviour>().ToList());
 			
 			Object.Destroy(go);
 			yield return null;
-			Assert.AreEqual(new List<TestBehaviour>{tb2}, Query.All<TestBehaviour>().ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tb2}, Query.All<TestBehaviour>().ToList());
 			
 			Object.Destroy(go2);
 			yield return null;
@@ -176,7 +176,7 @@ namespace CoreLibrary.Tests
 		{
 			yield return Setup();
 
-			Assert.AreEqual(new List<TestBehaviour>{tb}, Query.AllActive<TestBehaviour>().ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tb}, Query.AllActive<TestBehaviour>().ToList());
 			
 			go.SetActive(false);
 			yield return null;
@@ -186,11 +186,11 @@ namespace CoreLibrary.Tests
 
 			yield return Setup2();
 			
-			Assert.AreEqual(new List<TestBehaviour>{tb, tb2}, Query.AllActive<TestBehaviour>().ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tb, tb2}, Query.AllActive<TestBehaviour>().ToList());
 			
 			go.SetActive(false);
 			yield return null;
-			Assert.AreEqual(new List<TestBehaviour>{tb2}, Query.AllActive<TestBehaviour>().ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tb2}, Query.AllActive<TestBehaviour>().ToList());
 			
 			go2.SetActive(false);
 			yield return null;
@@ -201,7 +201,7 @@ namespace CoreLibrary.Tests
 			
 			Object.Destroy(go);
 			yield return null;
-			Assert.AreEqual(new List<TestBehaviour>{tb2}, Query.AllActive<TestBehaviour>().ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tb2}, Query.AllActive<TestBehaviour>().ToList());
 			
 			Object.Destroy(go2);
 			yield return null;
@@ -260,26 +260,26 @@ namespace CoreLibrary.Tests
 		{
 			yield return SetupWith();
 			
-			Assert.AreEqual(new List<TestBehaviour>{tbw1, tbw2, tbw3}, Query.AllWith<TestBehaviour>(typeof(TestA)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw2, tbw3}, Query.AllWith<TestBehaviour>(typeof(TestB)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw1, tbw3}, Query.AllWith<TestBehaviour>(typeof(TestC)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw3}, Query.AllWith<TestBehaviour>(typeof(TestA), typeof(TestB), typeof(TestC)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw1, tbw2, tbw3}, Query.AllWith<TestBehaviour>(typeof(TestA)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw2, tbw3}, Query.AllWith<TestBehaviour>(typeof(TestB)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw1, tbw3}, Query.AllWith<TestBehaviour>(typeof(TestC)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw3}, Query.AllWith<TestBehaviour>(typeof(TestA), typeof(TestB), typeof(TestC)).ToList());
 			
 			gow1.SetActive(false);
 			gow2.SetActive(false);
 			yield return null;
 			
-			Assert.AreEqual(new List<TestBehaviour>{tbw1, tbw2, tbw3}, Query.AllWith<TestBehaviour>(typeof(TestA)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw2, tbw3}, Query.AllWith<TestBehaviour>(typeof(TestB)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw1, tbw3}, Query.AllWith<TestBehaviour>(typeof(TestC)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw3}, Query.AllWith<TestBehaviour>(typeof(TestA), typeof(TestB), typeof(TestC)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw1, tbw2, tbw3}, Query.AllWith<TestBehaviour>(typeof(TestA)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw2, tbw3}, Query.AllWith<TestBehaviour>(typeof(TestB)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw1, tbw3}, Query.AllWith<TestBehaviour>(typeof(TestC)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw3}, Query.AllWith<TestBehaviour>(typeof(TestA), typeof(TestB), typeof(TestC)).ToList());
 
 			Object.Destroy(gow3);
 			yield return null;
 			
-			Assert.AreEqual(new List<TestBehaviour>{tbw1, tbw2}, Query.AllWith<TestBehaviour>(typeof(TestA)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw2}, Query.AllWith<TestBehaviour>(typeof(TestB)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw1}, Query.AllWith<TestBehaviour>(typeof(TestC)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw1, tbw2}, Query.AllWith<TestBehaviour>(typeof(TestA)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw2}, Query.AllWith<TestBehaviour>(typeof(TestB)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw1}, Query.AllWith<TestBehaviour>(typeof(TestC)).ToList());
 			Assert.IsEmpty(Query.AllWith<TestBehaviour>(typeof(TestA), typeof(TestB), typeof(TestC)).ToList());
 
 			TearDownWith();
@@ -290,19 +290,19 @@ namespace CoreLibrary.Tests
 		{
 			yield return SetupWith();
 			
-			Assert.AreEqual(new List<TestBehaviour>{tbw1, tbw2, tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestA)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw2, tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestB)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw1, tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestC)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestA), typeof(TestB), typeof(TestC)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw1, tbw2, tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestA)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw2, tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestB)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw1, tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestC)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestA), typeof(TestB), typeof(TestC)).ToList());
 			
 			gow1.SetActive(false);
 			gow2.SetActive(false);
 			yield return null;
 			
-			Assert.AreEqual(new List<TestBehaviour>{tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestA)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestB)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestC)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestA), typeof(TestB), typeof(TestC)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestA)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestB)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestC)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw3}, Query.AllActiveWith<TestBehaviour>(typeof(TestA), typeof(TestB), typeof(TestC)).ToList());
 
 			gow3.SetActive(true);
 			gow2.SetActive(true);
@@ -314,8 +314,8 @@ namespace CoreLibrary.Tests
 			Object.Destroy(gow3);
 			yield return null;
 			
-			Assert.AreEqual(new List<TestBehaviour>{tbw2}, Query.AllActiveWith<TestBehaviour>(typeof(TestA)).ToList());
-			Assert.AreEqual(new List<TestBehaviour>{tbw2}, Query.AllActiveWith<TestBehaviour>(typeof(TestB)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw2}, Query.AllActiveWith<TestBehaviour>(typeof(TestA)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestBehaviour>{tbw2}, Query.AllActiveWith<TestBehaviour>(typeof(TestB)).ToList());
 			Assert.IsEmpty(Query.AllActiveWith<TestBehaviour>(typeof(TestC)).ToList());
 			Assert.IsEmpty(Query.AllActiveWith<TestBehaviour>(typeof(TestA), typeof(TestB), typeof(TestC)).ToList());
 
@@ -344,7 +344,7 @@ namespace CoreLibrary.Tests
 			Assert.Contains(tb, _registered[typeof(TestB)].ToList());
 			Assert.Contains(tc, _registered[typeof(TestC)].ToList());
 			
-			Assert.AreEqual(new List<Queryable>{qa, qbc}, _enabled.ToList());
+			CollectionAssert.AreEquivalent(new List<Queryable>{qa, qbc}, _enabled.ToList());
 			
 			Object.Destroy(goA);
 			Object.Destroy(goBC);
@@ -362,8 +362,8 @@ namespace CoreLibrary.Tests
 
 			yield return null;
 			
-			Assert.AreEqual(new List<TestA> {ta}, Query.All<TestA>().ToList());
-			Assert.AreEqual(new List<TestC> {tc}, Query.AllWith<TestC>(typeof(TestB)).ToList());
+			CollectionAssert.AreEquivalent(new List<TestA> {ta}, Query.All<TestA>().ToList());
+			CollectionAssert.AreEquivalent(new List<TestC> {tc}, Query.AllWith<TestC>(typeof(TestB)).ToList());
 
 			Object.Destroy(goA);
 			Object.Destroy(goBC);
@@ -387,9 +387,9 @@ namespace CoreLibrary.Tests
 
 			yield return null;
 			
-			Assert.AreEqual(new List<BaseTestBehaviour> {ta, tb}, Query.All<BaseTestBehaviour>().ToList());
+			CollectionAssert.AreEquivalent(new List<BaseTestBehaviour> {ta, tb}, Query.All<BaseTestBehaviour>().ToList());
 
-			Assert.AreEqual(new List<BaseTestBehaviour> {ta},
+			CollectionAssert.AreEquivalent(new List<BaseTestBehaviour> {ta},
 				Query.AllWith<BaseTestBehaviour>(typeof(BonusBase)).ToList());
 			
 			Object.Destroy(goA);

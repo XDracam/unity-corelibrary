@@ -74,7 +74,7 @@ public class Gun : BaseBehaviour
 
 -- Yeah, you are right. This is because I did not write a custom, use-case specific pool for comparison.
 
-In the example above, instead of configuring the pool in the Unity inspector we added a `RequireComponent(typeof(GenericPool))` to our `Gun` class. This automatically adds a `GenericPool` component, which we configured in the `Start()` method. Whenever we configure a pool in a script, we need to call the `pool.Init()` method. When you don't, then the pool initializes itself at the first call to `RequestItem()`, which might cause a small freeze.
+In the example above, instead of configuring the pool in the Unity inspector we added a `[RequireComponent(typeof(GenericPool))]` to our `Gun` class. This automatically adds a `GenericPool` component, which we configured in the `Start()` method. Whenever we configure a pool in a script, we need to call the `pool.Init()` method. When you don't, then the pool initializes itself at the first call to `RequestItem()`, which might cause a small freeze. *All changes to the `Template` or the `Capacity` after initialization will be rejected with a warning*.
 
 When the pool does not find any item to reuse (which never happens in our example, why later), it's behaviour depends on the value of `GrowRate`. You see, in order to prevent glitches when there suddenly are no bullet lefts, the pool **grows** similar to the way a `List<T>` grows it's underlying array. When an item is requested but there are no free items to be found, the pool grows by a factor of `GrowRate`. Per default, `GrowRate` is set to `0.3`. There is a rough estimation. *If you know better, set it yourself.*
 

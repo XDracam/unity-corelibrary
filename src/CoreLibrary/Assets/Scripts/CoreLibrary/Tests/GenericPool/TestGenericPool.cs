@@ -48,6 +48,19 @@ namespace CoreLibrary.Tests.GenericPool
             pool.Template = (TestReusable) templateGo.AddComponent(toAdd ?? typeof(TestReusable));
             return pool;
         }
+
+        [Test]
+        public void TestInit()
+        {
+            var go = new GameObject();
+            var pool = go.AddComponent<CoreLibrary.GenericPool>();
+            Assert.Throws<NoTemplateException>(() => pool.Init());
+            var templateGo = new GameObject {name = "Template Object"};
+            pool.Template = templateGo.AddComponent<TestReusable>();
+            pool.Capacity = -1;
+            Assert.DoesNotThrow(() => pool.Init());
+            Assert.AreEqual(0, pool.Capacity);
+        }
         
         [Test]
         public void TestProperReuse()

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace CoreLibrary
@@ -35,7 +36,9 @@ namespace CoreLibrary
     /// either <see cref="Init"/> is called manually, or the first
     /// item is requested. <i>You can override this behaviour by
     /// setting <see cref="InitOnSceneStart"/> to true in the
-    /// inspector.</i>
+    /// inspector.</i> Any changes to either <see cref="Template"/>
+    /// or <see cref="Capacity"/> will be rejected with a warning
+    /// after initialization. 
     /// <br/><br/>
     /// To ensure working conditions even under extreme and
     /// unexpected circumstances, the pool behaves similar
@@ -64,11 +67,28 @@ namespace CoreLibrary
                  "\nWhen this equals zero the pool throws an error instead of growing on demand.")]
         public float GrowRate = 0.3f;
         
-        // this exists only because inheritance does not work in the unity editor
+        /// <summary>
+        /// <b>Don't set this from a script, it will not work.</b>
+        /// <br/><br/>
+        /// This property exists only because inheritance does
+        /// not work properly in the unity editor.
+        /// </summary>
         [Tooltip("The game object or prefab that is duplicated for use in this pool. Must have a 'Reusable' component.")]
         public GameObject TemplateObject;
 
-        public Reusable Template { get; set; }
+        private Reusable _template;
+        public Reusable Template
+        {
+            get { return _template; }
+            set
+            {
+                if (_didInit)
+                    Debug.LogWarning(
+                        this + ": Tried to set template to '" + value +
+                        "' after initialization. Make sure everything is set before the pool is initialized.");
+                else _template = value;
+            }
+        }
 
         [Tooltip("When set, instantiates this pool at the start of the scene.")]
         public bool InitOnSceneStart = false;
@@ -81,14 +101,20 @@ namespace CoreLibrary
         
         private void OnValidate()
         {
-            if (TemplateObject != null)
+            if (_didInit)
+            {
+                Capacity = _buffer.Capacity;
+                TemplateObject = Template.gameObject;
+                Debug.LogWarning("You cannot change a pool's template or capacity after it has been initialized.");
+            }
+            else if (TemplateObject != null)
             {
                 Template = TemplateObject.As<Reusable>(Search.InChildren);
                 if (Template == null)
                 {
                     TemplateObject = null; 
-                    throw new Exception(
-                        "The specified template object must have a component that extends Reusable.");
+                    Debug.LogWarning(
+                        "The specified template object must have a component that extends 'Reusable'.");
                 } 
             }
         }
@@ -99,9 +125,19 @@ namespace CoreLibrary
         /// Call to initialize the pool manually.
         /// This is automatically called in `Start()`.
         /// </summary>
+        /// <exception cref="NoTemplateException">
+        /// When <see cref="Template"/> is null.
+        /// </exception>
         public void Init()
         {
             if (_didInit) return;
+            if (Capacity < 0)
+            {
+                Debug.LogWarning(this + ": Capacity must be at least zero but was " + Capacity);
+                Capacity = 0;
+            }
+            if (Template == null)
+                throw new NoTemplateException(this);
             _didInit = true;
             _buffer = new List<Reusable>(Capacity);
             for (var i = 0; i < Capacity; ++i) AddItem();
@@ -115,10 +151,6 @@ namespace CoreLibrary
         private void Update()
         {
             if (!_didInit) return;
-            if (Template == null && TemplateObject != null)
-            {
-                Template = TemplateObject.As<Reusable>();
-            }
             if (_buffer.Count < Capacity) AddItem();
         }
 
@@ -139,7 +171,7 @@ namespace CoreLibrary
         /// </exception>
         /// <seealso cref="RequestItem(Vector3)"/>
         /// <seealso cref="RequestItem(Vector3, Quaternion)"/>
-        public GameObject RequestItem() { return RequestItem(Vector3.zero, Quaternion.identity); }
+        [NotNull] public GameObject RequestItem() { return RequestItem(Vector3.zero, Quaternion.identity); }
 
         /// <returns>An instance of the <see cref="TemplateObject"/> prefab, active and at the specified position.</returns>
         /// <exception cref="PoolOutOfItemsException">
@@ -147,7 +179,7 @@ namespace CoreLibrary
         /// </exception>
         /// <seealso cref="RequestItem()"/>
         /// <seealso cref="RequestItem(Vector3, Quaternion)"/>
-        public GameObject RequestItem(Vector3 position) { return RequestItem(position, Quaternion.identity); }
+        [NotNull] public GameObject RequestItem(Vector3 position) { return RequestItem(position, Quaternion.identity); }
 
         /// <returns>
         /// An instance of the <see cref="TemplateObject"/> prefab,
@@ -157,7 +189,7 @@ namespace CoreLibrary
         /// </exception>
         /// <seealso cref="RequestItem()"/>
         /// <seealso cref="RequestItem(Vector3)"/>
-        public GameObject RequestItem(Vector3 position, Quaternion rotation)
+        [NotNull] public GameObject RequestItem(Vector3 position, Quaternion rotation)
         {
             if (!_didInit)
             {
