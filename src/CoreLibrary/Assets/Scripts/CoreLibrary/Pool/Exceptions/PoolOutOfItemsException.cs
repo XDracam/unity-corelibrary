@@ -1,6 +1,6 @@
 using System;
 
-namespace CoreLibrary
+namespace CoreLibrary.Exceptions
 {
     /// <summary>
     /// Author: Cameron Reuschel

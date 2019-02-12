@@ -1,4 +1,5 @@
 using System;
+using CoreLibrary.Exceptions;
 
 namespace CoreLibrary
 {
@@ -25,11 +26,13 @@ namespace CoreLibrary
                 var tmp = FindObjectsOfType<T>();
 
                 if (tmp == null || tmp.Length == 0)
-                    throw new Exception("Singleton: An instance of " + typeof(T).Name +
-                                        " is needed in the scene, but there is none.");
+                    throw new WrongSingletonUsageException(
+                        "Singleton: An instance of " + typeof(T).Name +
+                        " is needed in the scene, but there is none.");
                 if (tmp.Length > 1)
-                    throw new Exception("Singleton: There is more than one instance of " +
-                                        typeof(T).Name + " in the scene.");
+                    throw new WrongSingletonUsageException(
+                        "Singleton: There is more than one instance of " +
+                        typeof(T).Name + " in the scene.");
                 _instance = tmp[0];
 
                 return _instance;

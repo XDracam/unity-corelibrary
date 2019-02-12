@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using CoreLibrary.Exceptions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -23,8 +24,6 @@ namespace CoreLibrary.Tests
         [UnityTest]
         public IEnumerator TestInstantiatesOnNone()
         {
-//            var origAC = UniqueComponent.AwakeCount;
-//            var origSC = UniqueComponent.StartCount;
             CollectionAssert.IsEmpty(Object.FindObjectsOfType<UniqueComponent>());
             var _ = UniqueComponent.Instance;
             Assert.NotNull(_);
@@ -39,7 +38,6 @@ namespace CoreLibrary.Tests
         {
             var _ = new GameObject();
             var comp = _.AddComponent<UniqueComponent>();
-            //Assert.Fail(Object.FindObjectsOfType<UniqueComponent>().Length.ToString());
             yield return null;
             Assert.AreSame(comp, UniqueComponent.Instance);
             Object.Destroy(_);
@@ -54,7 +52,7 @@ namespace CoreLibrary.Tests
             _2.AddComponent<UniqueComponent>();
             yield return null;
             UniqueComponent _;
-            Assert.Throws<Exception>(() => _ = UniqueComponent.Instance);
+            Assert.Throws<WrongSingletonUsageException>(() => _ = UniqueComponent.Instance);
             Object.Destroy(_1);
             Object.Destroy(_2);
         }

@@ -1,4 +1,5 @@
 using System;
+using CoreLibrary.Exceptions;
 using UnityEngine;
 
 namespace CoreLibrary
@@ -36,8 +37,9 @@ namespace CoreLibrary
                 else _instance = tmp[0];
                 
                 if (tmp != null && tmp.Length > 1)
-                    throw new Exception("Singleton: There is more than one instance of " +
-                                        typeof(T) + " in the scene.");
+                    throw new WrongSingletonUsageException(
+                        "Singleton: There is more than one instance of " +
+                        typeof(T) + " in the scene.");
                 
                 return _instance;
             }

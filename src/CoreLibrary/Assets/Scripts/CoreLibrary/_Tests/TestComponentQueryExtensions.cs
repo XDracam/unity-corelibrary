@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CoreLibrary.Exceptions;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -39,7 +40,7 @@ namespace CoreLibrary.Tests
             Assert.AreEqual(rb, expected);
 
             MeshRenderer rend;
-            Assert.Throws<Exception>(() => uut.AssignComponent(out rend));
+            Assert.Throws<ComponentNotFoundException>(() => uut.AssignComponent(out rend));
         }
 
         [Test]
