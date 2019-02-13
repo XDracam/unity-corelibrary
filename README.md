@@ -91,6 +91,16 @@ Query.All<Interactable>()
     .ToList();
 ```
 
+### Other Utilities
+
+```cs
+void DoSomething<T>(T value) 
+{
+    // works around Unity's custom null comparison bugs
+    if (!Util.IsNull(value)) { ... }
+}
+```
+
 ## Getting Started
 
 Requires Unity 2018.1 or above. Compatible with *C# 4 (.NET 3.5)* and above.
