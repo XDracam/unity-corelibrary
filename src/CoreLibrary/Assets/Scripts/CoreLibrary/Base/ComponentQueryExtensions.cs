@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CoreLibrary.Exceptions;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace CoreLibrary
@@ -19,48 +20,82 @@ namespace CoreLibrary
     // ReSharper disable all InvalidXmlDocComment
     public static class ComponentQueryExtensions
     {
-        private static TRes SearchParents<T, TRes>(GameObject go, Func<T, TRes> fn, TRes onFailure) where T : Component
+        private static T SearchParents<T>(GameObject go, Func<GameObject, T> mapper) where T : class
         {
             while (true)
             {
-                var res = go.GetComponent<T>();
-                if (res) return fn(res);
-                if (go.transform.parent == null) return onFailure;
+                var res = mapper(go);
+                if (!Util.IsNull(res)) return res;
+                if (go.transform.parent == null) return null;
                 go = go.transform.parent.gameObject;
             }
         }
 
-        private static TRes SearchChildren<T, TRes>(GameObject go, Func<T, TRes> fn, TRes onFailure) where T : Component
+        private static T SearchChildren<T>(GameObject go, Func<GameObject, T> mapper) where T : class
         {
-            var res = go.GetComponent<T>();
-            if (res) return fn(res);
+            var res = mapper(go);
+            if (!Util.IsNull(res)) return res;
             foreach (var child in go.transform.GetChildren())
             {
-                var recres = SearchChildren(child.gameObject, fn, onFailure);
-                if (recres != null && !recres.Equals(onFailure)) return recres;
+                var recres = SearchChildren(child.gameObject, mapper);
+                if (!Util.IsNull(recres)) return recres;
             }
 
-            return onFailure;
+            return null;
         }
 
-        private static T SearchFor<T>(GameObject go, Search where) where T : Component
+        /// <summary>
+        /// This method enables you to search an object's hierarchy
+        /// for a more complex conditions. The passed function <paramref name="fn"/>
+        /// is applied to every object in the specified search path until
+        /// it returns a value that is not null. This value is returned.
+        /// When nothing is found, null is returned.
+        /// </summary>
+        /// <example>
+        /// T GetComponentInParent<T>(GameObject go) =>
+        ///     go.Find(obj => obj.As<T>(), Search.InParents);
+        /// </example>
+        /// <param name="fn">
+        /// This function is applied to every game object in the search path
+        /// until it returns a value that is not null. This result is returned.
+        /// </param>
+        /// <param name="where">
+        /// The search scope if <paramref name="fn"/> returns null for the object itself.
+        /// </param>
+        /// <returns
+        /// >The first non-null result from applying <paramref name="fn"/>
+        /// to each game object in the search path, or null if nothing was found.
+        /// </returns>
+        [CanBeNull] 
+        public static T Find<T>(this GameObject go, [NotNull] Func<GameObject, T> fn, Search where)
+            where T : class
         {
             switch (where)
             {
                 case Search.InObjectOnly:
-                    return go.GetComponent<T>();
+                    return fn(go);
                 case Search.InChildren:
-                    return go.GetComponentInChildren<T>();
+                    return SearchChildren(go, fn);
                 case Search.InParents:
-                    return go.GetComponentInParent<T>();
+                    return SearchParents(go, fn);
                 case Search.InWholeHierarchy:
-                    var parentSearch = go.GetComponentInParent<T>();
-                    if (parentSearch != null)
-                        return parentSearch;
-                    return go.GetComponentInChildren<T>();
+                    if (go.transform.parent != null)
+                    {
+                        var parentSearch = SearchParents(go.transform.parent.gameObject, fn);
+                        if (!Util.IsNull(parentSearch)) return parentSearch;
+                    }
+                    return SearchChildren(go, fn);
                 default:
-                    throw new UnsupportedSearchException("Unsupported search type: " + where);
+                    throw new UnsupportedSearchException(where);
             }
+        }
+
+        /// <inheritdoc cref="Find{T}(UnityEngine.GameObject,System.Func{UnityEngine.GameObject,T},CoreLibrary.Search)"/>
+        [CanBeNull]
+        public static T Find<T>(this Transform tr, [NotNull] Func<GameObject, T> fn, Search where = Search.InObjectOnly)
+            where T : class
+        {
+            return tr.gameObject.Find<T>(fn, where);
         }
 
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
@@ -68,7 +103,7 @@ namespace CoreLibrary
         /// <returns>true if any object in the specified search scope has a component of type T.</returns>
         public static bool Is<T>(this GameObject go, Search where = Search.InObjectOnly) where T : Component
         {
-            var res = SearchFor<T>(go, where);
+            var res = go.As<T>(where);
             return res != null;
         }
 
@@ -81,13 +116,30 @@ namespace CoreLibrary
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
         /// <typeparam name="T">The type of the component to find.</typeparam>
         /// <returns>The first component of type T found in the search scope or null if not found.</returns>
-        public static T As<T>(this GameObject go, Search where = Search.InObjectOnly) where T : Component
+        [CanBeNull] public static T As<T>(this GameObject go, Search where = Search.InObjectOnly) where T : Component
         {
-            return SearchFor<T>(go, where);
+            switch (where)
+            {
+                case Search.InObjectOnly:
+                    return go.GetComponent<T>();
+                case Search.InChildren:
+                    return go.GetComponentInChildren<T>();
+                case Search.InParents:
+                    return go.GetComponentInParent<T>();
+                case Search.InWholeHierarchy:
+                    if (go.transform.parent != null)
+                    {
+                        var parentSearch = go.transform.parent.GetComponentInParent<T>();
+                        if (parentSearch != null) return parentSearch;
+                    }
+                    return go.GetComponentInChildren<T>();
+                default:
+                    throw new UnsupportedSearchException(where);
+            }
         }
 
         /// <inheritdoc cref="As{T}(GameObject, Search)"/>
-        public static T As<T>(this Transform tr, Search where = Search.InObjectOnly) where T : Component
+        [CanBeNull] public static T As<T>(this Transform tr, Search where = Search.InObjectOnly) where T : Component
         {
             return tr.gameObject.As<T>(where);
         }
@@ -95,7 +147,7 @@ namespace CoreLibrary
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
         /// <typeparam name="T">The type of the component to find.</typeparam>
         /// <returns>A lazily generated IEnumerable of all components of type T found in the search scope. Might be empty.</returns>
-        public static IEnumerable<T> All<T>(this GameObject go, Search where = Search.InObjectOnly) where T : Component
+        [NotNull] public static IEnumerable<T> All<T>(this GameObject go, Search where = Search.InObjectOnly) where T : Component
         {
             switch (where)
             {
@@ -106,14 +158,17 @@ namespace CoreLibrary
                 case Search.InChildren:
                     return go.GetComponentsInChildren<T>();
                 case Search.InWholeHierarchy:
-                    return go.GetComponentsInParent<T>().AndAlso(go.GetComponentsInChildren<T>());
+                    var parentSearch = go.transform.parent != null
+                        ? go.transform.parent.gameObject.GetComponentsInParent<T>()
+                        : new T[]{};
+                    return parentSearch.AndAlso(go.GetComponentsInChildren<T>());
                 default:
-                    throw new UnsupportedSearchException("Unsupported search type: " + where);
+                    throw new UnsupportedSearchException(where);
             }
         }
 
         /// <inheritdoc cref="All{T}(GameObject, Search)"/>
-        public static IEnumerable<T> All<T>(this Transform tr, Search where = Search.InObjectOnly) where T : Component
+        [NotNull] public static IEnumerable<T> All<T>(this Transform tr, Search where = Search.InObjectOnly) where T : Component
         {
             return tr.gameObject.All<T>(where);
         }

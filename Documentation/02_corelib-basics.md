@@ -29,7 +29,7 @@ When you want to safely traverse an `IEnumerable<T>` multiple times, you have to
 ## BaseBehaviour
 
 Every component in Unity extends the class `UnityEngine.MonoBehaviour`. However, if you want all features from the CoreLibrary you should extend `CoreLibrary.Base.BaseBehaviour` instead, which itself extends `MonoBehaviour`.
-`BaseBehaviour` lets you use all generic utilities such as the mathematically correct modulus `Mod(x,y)` as well as shortcuts to `SetPerceivable`, `AssignComponent` and `AssignIfAbsent` described later.
+`BaseBehaviour` lets you use shortcuts to `SetPerceivable`, `AssignComponent` and `AssignIfAbsent` as described later.
 
 ## Utility extensions
 
@@ -128,7 +128,8 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         if (Player.Instance != null)
-            throw new Exception("Already a player component in the scene!");
+            throw new WrongSingletonUsageException(
+                "Already a player component in the scene!");
         Player.Instance = this;
 
         /* ... */

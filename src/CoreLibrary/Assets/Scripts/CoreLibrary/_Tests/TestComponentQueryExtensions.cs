@@ -78,22 +78,22 @@ namespace CoreLibrary.Tests
             
             // test whole hierarchy traversed
             var col1 = parent3.AddComponent<BoxCollider>();
-            Assert.AreSame(col1, uut.As<Collider>(scope));
+            Assert.AreSame(col1, uut.Find(obj => obj.As<Collider>(), scope));
             
             // test return first found
             var col2 = parent1.AddComponent<SphereCollider>();
-            Assert.AreSame(col2, uut.As<Collider>(scope));
+            Assert.AreSame(col2, uut.Find(obj => obj.As<Collider>(), scope));
         }
         
         [Test]
-        public void TestSearchParents()
+        public void TestFindParents()
         {
             var uut = new GameObject("uut");
             var c1 = NewGameObject(uut, "c1");
             
             // test if children are ignored
             c1.AddComponent<BoxCollider>();
-            Assert.IsFalse(uut.Is<Collider>(Search.InParents));
+            Assert.IsNull(uut.Find(obj => obj.As<Collider>(), Search.InParents));
             
             AssertParentsFound(Search.InParents);
         }
@@ -114,32 +114,32 @@ namespace CoreLibrary.Tests
             
             // test whole hierarchy traversed
             var col1 = c211.AddComponent<MeshCollider>();
-            Assert.AreSame(col1, uut.As<Collider>(scope));
+            Assert.AreSame(col1, uut.Find(obj => obj.As<Collider>(), scope));
            
             // test eager stop
             var col2 = c12.AddComponent<BoxCollider>();
-            Assert.AreSame(col2, uut.As<Collider>(scope));
+            Assert.AreSame(col2, uut.Find(obj => obj.As<Collider>(), scope));
             
             // test traversal of children in order
             var col3 = c11.AddComponent<SphereCollider>();
-            Assert.AreSame(col3, uut.As<Collider>(scope));
+            Assert.AreSame(col3, uut.Find(obj => obj.As<Collider>(), scope));
         }
 
         [Test]
-        public void TestSearchChildren()
+        public void TestFindChildren()
         {
             var p1 = new GameObject();
             var uut = NewGameObject(p1);
             
             // test if parents are ignored
             p1.AddComponent<BoxCollider>();
-            Assert.IsFalse(uut.Is<Collider>(Search.InChildren));
+            Assert.IsNull(uut.Find(obj => obj.As<Collider>(), Search.InChildren));
             
             AssertChildrenFound(Search.InChildren);
         }
 
         [Test]
-        public void TestSearchWholeHierarchy()
+        public void TestFindWholeHierarchy()
         {
             AssertParentsFound(Search.InWholeHierarchy);
             AssertChildrenFound(Search.InWholeHierarchy);

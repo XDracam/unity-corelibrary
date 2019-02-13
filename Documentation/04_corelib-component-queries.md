@@ -124,3 +124,23 @@ shipsHit.ForEach(hit => hit.rigidbody.useGravity(true));
 As you can see, `Is`, `As` and `All` make the code more concise but they make complex searches much easier as well! `.Collect` is a nice shortcut to lose the null checks. `.ForEach` depends on one's taste. I personally prefer it to an additional variable and a loop.
 
 All three methods are available as extensions to both `GameObject` and `Transform` classes for convenience.
+
+## Find
+
+In case `Is<T>` and `As<T>` are not enough for your needs, the CoreLibrary provides the `gameObject.Find<T>(Func<GameObject, T> fn, Search where)` method. The `gameObject` is traversed in the order defined by the `Search where` parameter. For each object in the hierarchy that is traversed, `fn` is called. When `fn` yields a result `!= null`, then the search is completed and the result is returned.
+
+In contrast to the other methods, `Find`s `Search where` parameter is *not optional*. This is because the default case of `Search.InObjectOnly` is equal to just calling `fn(gameObject)`, which makes no sense.
+
+You can easily implement `Is<T>` and `As<T>` via `Find<T>`, but this is not done for efficiency reasons.
+
+```cs
+public static T As<T>(this GameObject go, Search where = Search.InObjectOnly)
+{
+    return go.Find(obj => obj.GetComponent<T>(), where);
+}
+
+public static bool Is<T>(this GameObject go, Search where = Search.InObjectOnly)
+{
+    return go.Find(obj => obj.GetComponent<T>(), where) != null;
+}
+```

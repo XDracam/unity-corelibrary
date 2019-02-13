@@ -22,14 +22,6 @@ namespace CoreLibrary
 			gameObject.SetPerceivable(state);
 		}
 
-		/// <summary>
-		/// Mathematically correct modulus. Always positive, even for negative arguments.
-		/// </summary>
-		[Pure] public static int Mod(int x, int m)
-		{
-			return (x % m + m) % m;
-		}
-
 		/// <inheritdoc cref="ComponentQueryExtensions.AssignComponent{T}(GameObject, out T, Search)"/>
 		/// <seealso cref="ComponentQueryExtensions.AssignComponent{T}(GameObject, out T, Search)"/>
 		protected void AssignComponent<T>(out T variable, Search where = Search.InObjectOnly) where T:Component

@@ -11,6 +11,6 @@ namespace CoreLibrary.Exceptions
     /// </summary>
     public class UnsupportedSearchException : Exception
     {
-        public UnsupportedSearchException(string message) : base(message) {}
+        public UnsupportedSearchException(Search where) : base("Unsupported search type: " + where) {}
     }
 }
