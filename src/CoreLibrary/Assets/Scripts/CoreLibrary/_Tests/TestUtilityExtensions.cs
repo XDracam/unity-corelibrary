@@ -25,6 +25,17 @@ namespace CoreLibrary.Tests
         }
 
         [Test]
+        public void TestIsNull()
+        {
+            string s = null;
+            Assert.IsTrue(s.IsNull());
+            Assert.IsFalse("foo".IsNull());
+            var go = new GameObject();
+            Object.DestroyImmediate(go);
+            Assert.IsTrue(go.IsNull());
+        }
+
+        [Test]
         public void TestSetPerceivable()
         { // TODO: test 2D colliders as well
             
@@ -69,6 +80,36 @@ namespace CoreLibrary.Tests
         }
         
         /* Vector extension tests omitted due to simplicity of code */
+
+        [Test]
+        public void TestPositionExtensions()
+        {
+            var go = new GameObject();
+            var vec3 = new Vector3(17, 19, -42);
+            go.transform.position = vec3;
+            Assert.AreEqual(go.transform.position, go.Pos());
+            Assert.AreEqual(go.transform.position, go.transform.Pos());
+            
+            var newVec = new Vector3(1, 2, 3);
+            go.SetPos(newVec);
+            Assert.AreEqual(newVec, go.transform.position);
+            go.transform.SetPos(vec3);
+            Assert.AreEqual(vec3, go.transform.position);
+            
+            go.SetPos(v => v + vec3);
+            Assert.AreEqual(vec3 + vec3, go.transform.position);
+            go.transform.SetPos(v => v + newVec);
+            Assert.AreEqual(vec3 + vec3 + newVec, go.transform.position);
+            
+            var vec2 = new Vector2(12, 3);
+            go.SetPos(vec2);
+            Assert.AreEqual((Vector3) vec2, go.transform.position);
+            
+            go.SetPos(v => v + vec2);
+            Assert.AreEqual((Vector3) (vec2 + vec2), go.transform.position);
+            go.transform.SetPos(v => v + vec2);
+            Assert.AreEqual((Vector3) (vec2 + vec2 + vec2), go.transform.position);
+        }
 
         [Test]
         public void TestForEach()

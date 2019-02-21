@@ -35,6 +35,8 @@ Every component in Unity extends the class `UnityEngine.MonoBehaviour`. However,
 
 `SetPerceivable(bool state)` redirects to the extension method on `GameObject` and enables you to make an object *unperceivable*, meaning that all `Collider`s and `Renderer`s are inactive, but the object itself isn't. This allows audio tracks and coroutines played on the object to *end properly*. However, lifecycle methods such as `Update()`, `FixedUpdate()` etc. are still called, causing a potential performance loss when overusing.
 
+`foo.IsNull()` is a more safe version of `foo == null`, which accounts for Unity's custom override of the `==` operator on components. You should only use this when working with a generic type `T` that does *not always* extend `UnityEngine.Component` or some subclass of it. For more information see the section [Generic Null Check].
+
 `Transform.GetChildren()` is something urgently missing from Unity. Without it, you have to use something along the lines of:
 
 ```cs
@@ -64,7 +66,7 @@ private IEnumerator Start()
 private Transform _other;
 private void Update()
 {
-    // can't just set position.y since unity at design here
+    // can't just set position
     this.transform.position = new Vector3(
         this.transform.position.x,
         _other.position.y,
@@ -80,20 +82,60 @@ private IEnumerator Start()
     while (true)
     {
         yield return new WaitForSeconds(2);
-        this.transform.position = this.transform.position.WithZ(z => z * 2);
+        this.transform.position =
+            this.transform.position.WithZ(z => z * 2);
     }
 }
 
 private Transform _other;
 private void Update()
 {
-    // can't just set position.y since unity at design here
+    // can't just set position.y
     this.transform.position =
         this.transform.position.WithY(_other.transform.position.y);
 }
 ```
 
 This makes working with vectors in an immutable (= **safer**) manner a lot more comfortable. Note that methods such as `v.WithXY(w.x, w.y)` are *not* provided, as that would be equal to `w.WithZ(v.z)`. In cases where two coordinates are not from the same source, keeping the `With?` calls separate causes more understandable code.
+
+## Position extensions
+
+In Unity code, the `position` of an object often plays an important role. However, accessing it looks rather unpleasant, so you often get code like this:
+
+```cs
+// -- without CoreLibrary
+someObject.transform.position = transform.position + Vector3.up * Offset;
+```
+
+It gets even more ugly when you try to change a single coordinate of the position, as calling `transform.position` yields a temporary value, which cannot be modified until saved in a variable:
+
+```cs
+// -- without CoreLibrary
+someObject.transform.position = new Vector3(
+    someObject.transform.position.x,
+    someObject.transform.position.y + Time.deltaTime * Speed,
+    someObject.transform.position.z);
+```
+
+Ew. We do not want to see that in code. Ever. To improve readability by *a lot*, the CoreLibrary provides extension methods `.Pos()`, `.SetPos(vec)` and `.SetPos(vec => newVec)`:
+
+```cs
+// -- with CoreLibrary
+someObject.SetPos(this.Pos() + Vector3.up * Offset);
+someObject.SetPos(pos => pos.WithY(y => y + Time.deltaTime * Speed));
+```
+
+These extensions even work when using `Vector2`s:
+
+```cs
+Vector2 vec2 = someObject.Pos();
+someObject.SetPos(vec2);
+// explicit parameter type necessary to avoid ambiguities
+someObject.SetPos((Vector2 v) => v + Vector2.up * Speed);
+```
+
+Consistency is important. Therefore I did **not** include a `Pos` property or similar on `BaseBehaviour` itself. Calling `this.Pos()` explicitly improves readability compared to a blank `Pos` or `Pos()`.
+Also, the getter and setter are methods because C# 4 does not provide extension properties.
 
 ## LINQ extensions
 

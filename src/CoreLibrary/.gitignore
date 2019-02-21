@@ -5,6 +5,9 @@
 [Bb]uilds/
 [Ll]ogs/
 
+Assets/AssetStoreTools
+Assets/AssetStoreTools.meta
+
 # Jetbrains Rider dll 
 Plugins/Editor/JetBrains/
 

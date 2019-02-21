@@ -516,7 +516,7 @@ public void Open()
 {
     _doorState.Open();
     OpenDoor()
-        .YieldWhile(() => _isOpening)
+        .YieldWhile(() => IsOpening)
         .Afterwards(() => _doorState.Hold()).Start();
 }
 
@@ -524,7 +524,7 @@ public void Close()
 {
     _doorState.Close();
     CloseDoor()
-        .YieldWhile(() => _isClosing)
+        .YieldWhile(() => IsClosing)
         .Afterwards(() => _doorState.Hold()).Start();
 } 
 
