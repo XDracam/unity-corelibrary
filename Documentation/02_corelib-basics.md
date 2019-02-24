@@ -29,7 +29,16 @@ When you want to safely traverse an `IEnumerable<T>` multiple times, you have to
 ## BaseBehaviour
 
 Every component in Unity extends the class `UnityEngine.MonoBehaviour`. However, if you want all features from the CoreLibrary you should extend `CoreLibrary.Base.BaseBehaviour` instead, which itself extends `MonoBehaviour`.
+
 `BaseBehaviour` lets you use shortcuts to `SetPerceivable`, `AssignComponent` and `AssignIfAbsent` as described later.
+
+An added bonus is the `public Position` property, which behaves *exactly* like `.transform.position` except that it *also* enables you to modify single coordinates directly:
+
+```cs
+someBaseBehaviour.Position.y += 5;
+```
+
+This is implemented using the `Util.[VectorProxy]` class.
 
 ## Utility extensions
 
@@ -98,51 +107,14 @@ private void Update()
 
 This makes working with vectors in an immutable (= **safer**) manner a lot more comfortable. Note that methods such as `v.WithXY(w.x, w.y)` are *not* provided, as that would be equal to `w.WithZ(v.z)`. In cases where two coordinates are not from the same source, keeping the `With?` calls separate causes more understandable code.
 
-## Position extensions
-
-In Unity code, the `position` of an object often plays an important role. However, accessing it looks rather unpleasant, so you often get code like this:
-
-```cs
-// -- without CoreLibrary
-someObject.transform.position = transform.position + Vector3.up * Offset;
-```
-
-It gets even more ugly when you try to change a single coordinate of the position, as calling `transform.position` yields a temporary value, which cannot be modified until saved in a variable:
-
-```cs
-// -- without CoreLibrary
-someObject.transform.position = new Vector3(
-    someObject.transform.position.x,
-    someObject.transform.position.y + Time.deltaTime * Speed,
-    someObject.transform.position.z);
-```
-
-Ew. We do not want to see that in code. Ever. To improve readability by *a lot*, the CoreLibrary provides extension methods `.Pos()`, `.SetPos(vec)` and `.SetPos(vec => newVec)`:
-
-```cs
-// -- with CoreLibrary
-someObject.SetPos(this.Pos() + Vector3.up * Offset);
-someObject.SetPos(pos => pos.WithY(y => y + Time.deltaTime * Speed));
-```
-
-These extensions even work when using `Vector2`s:
-
-```cs
-Vector2 vec2 = someObject.Pos();
-someObject.SetPos(vec2);
-// explicit parameter type necessary to avoid ambiguities
-someObject.SetPos((Vector2 v) => v + Vector2.up * Speed);
-```
-
-Consistency is important. Therefore I did **not** include a `Pos` property or similar on `BaseBehaviour` itself. Calling `this.Pos()` explicitly improves readability compared to a blank `Pos` or `Pos()`.
-Also, the getter and setter are methods because C# 4 does not provide extension properties.
-
 ## LINQ extensions
 
-LINQ is a lovely framework that brings the *mapreduce* paradigm to C# in an efficient and SQL-ish way. With it you can replace almost any 
+LINQ is a lovely framework that brings the *mapreduce* paradigm to C# in an efficient and SQL-ish way. With it you can replace almost any
+
 ```cs
 for (int i=0;i<n;++i)
-``` 
+```
+
 loop once and for all, which increases the expressibility of your code while making it a lot less error-prone. Everything in LINQ is internally implemented as simple Coroutines with `yield`. You can probably write it yourself.
 
 As great as LINQ is, some heavy use cases are still missing.

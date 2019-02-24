@@ -3,7 +3,7 @@ title: "The Unity CoreLibrary"
 author: [Cameron Reuschel]
 subject: "CoreLibrary"
 subtitle: "A collection of useful classes and extension methods for every Unity project"
-date: "Version 0.0.4"
+date: "Version 0.0.5"
 titlepage: true
 ...
 
