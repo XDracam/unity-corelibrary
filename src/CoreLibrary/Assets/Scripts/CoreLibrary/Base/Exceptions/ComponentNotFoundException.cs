@@ -11,6 +11,6 @@ namespace CoreLibrary.Exceptions
     /// </summary>
     public class ComponentNotFoundException : Exception 
     {
-        public ComponentNotFoundException(string message) : base(message) {}
+        internal ComponentNotFoundException(string message) : base(message) {}
     }
 }

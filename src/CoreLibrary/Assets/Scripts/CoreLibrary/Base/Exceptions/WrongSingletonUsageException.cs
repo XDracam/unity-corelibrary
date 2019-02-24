@@ -11,6 +11,6 @@ namespace CoreLibrary.Exceptions
     /// </summary>
     public class WrongSingletonUsageException : Exception
     {
-        public WrongSingletonUsageException(string message) : base(message) {}
+        internal WrongSingletonUsageException(string message) : base(message) {}
     }
 }
