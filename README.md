@@ -20,7 +20,7 @@ For a complete list, see the [full documentation](Documentation/documentation.pd
 ### Unity Extensions
 
 ```cs
-var newVec = transform.position.WithY(y => y + 2);
+var newVec = someObject.Pos().WithY(y => y + 2);
 
 foreach (var child in transform.GetChildren()) { ... }
 
