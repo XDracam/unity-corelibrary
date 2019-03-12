@@ -105,7 +105,7 @@ void DoSomething<T>(T value)
 
 Requires Unity 2018.1 or above. Compatible with *C# 4 (.NET 3.5)* and above.
 
-Either clone this repository and paste the `CoreLibrary` folder into your Scripts folder (or anywhere) or download directly from the [Asset Store](???).
+Either clone this repository and paste the `CoreLibrary` folder into your Scripts folder (or anywhere) or download directly from the [Asset Store](https://assetstore.unity.com/packages/tools/integration/corelibrary-139339).
 
 Then add the line
 ```cs
