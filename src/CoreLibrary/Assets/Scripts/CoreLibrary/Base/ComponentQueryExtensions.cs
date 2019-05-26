@@ -109,9 +109,15 @@ namespace CoreLibrary
         }
 
         /// <inheritdoc cref="Is{T}(GameObject, Search)"/>
-        public static bool Is<T>(this Transform tr, Search where = Search.InObjectOnly) where T : class
+        public static bool Is<T>(this Component comp, Search where = Search.InObjectOnly) where T : class
         {
-            return tr.gameObject.Is<T>(where);
+            return comp.gameObject.Is<T>(where);
+        }
+        
+        /// <inheritdoc cref="Is{T}(GameObject, Search)"/>
+        public static bool Is<T>(this Collision col, Search where = Search.InObjectOnly) where T : class
+        {
+            return col.gameObject.Is<T>(where);
         }
 
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
@@ -143,9 +149,16 @@ namespace CoreLibrary
 
         /// <inheritdoc cref="As{T}(GameObject, Search)"/>
         [CanBeNull]
-        public static T As<T>(this Transform tr, Search where = Search.InObjectOnly) where T : class
+        public static T As<T>(this Component comp, Search where = Search.InObjectOnly) where T : class
         {
-            return tr.gameObject.As<T>(where);
+            return comp.gameObject.As<T>(where);
+        }
+        
+        /// <inheritdoc cref="As{T}(GameObject, Search)"/>
+        [CanBeNull]
+        public static T As<T>(this Collision col, Search where = Search.InObjectOnly) where T : class
+        {
+            return col.gameObject.As<T>(where);
         }
 
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
@@ -171,12 +184,19 @@ namespace CoreLibrary
                     throw new UnsupportedSearchException(where);
             }
         }
-
+        
         /// <inheritdoc cref="All{T}(GameObject, Search)"/>
-        [NotNull]
-        public static IEnumerable<T> All<T>(this Transform tr, Search where = Search.InObjectOnly) where T : class
+        [CanBeNull]
+        public static IEnumerable<T> All<T>(this Component comp, Search where = Search.InObjectOnly) where T : class
         {
-            return tr.gameObject.All<T>(where);
+            return comp.gameObject.All<T>(where);
+        }
+        
+        /// <inheritdoc cref="All{T}(GameObject, Search)"/>
+        [CanBeNull]
+        public static IEnumerable<T> All<T>(this Collision col, Search where = Search.InObjectOnly) where T : class
+        {
+            return col.gameObject.All<T>(where);
         }
 
         /// <summary>

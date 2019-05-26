@@ -121,17 +121,17 @@ foreach (var hit in shipsHit) hit.rigidbody.useGravity(true);
 var shipsHit = hits
     .Where(h => h.transform.Is<Spaceship>(Search.InWholeHierarchy));
 shipsHit
-    .Collect(s => s.transform.As<Animator>())
+    .Collect(s => s.As<Animator>())
     .ForEach(anim => anim.play("hit"));
 shipsHit
-    .SelectMany(s => s.transform.All<AntigravityEngine>(Search.InWholeHierarchy))
+    .SelectMany(s => s.All<AntigravityEngine>(Search.InWholeHierarchy))
     .ForEach(engine => engine.Explode());
 shipsHit.ForEach(hit => hit.rigidbody.useGravity(true));
 ```
 
 As you can see, `Is`, `As` and `All` make the code more concise but they make complex searches much easier as well! `.Collect` is a nice shortcut to lose the null checks. `.ForEach` depends on one's taste. I personally prefer it to an additional variable and a loop.
 
-All three methods are available as extensions to both `GameObject` and `Transform` classes for convenience.
+All three methods are available as extensions to `GameObject`, any `Component` including `Transform` as well as `Collision` for convenience.
 
 ## Find
 
