@@ -30,7 +30,7 @@ When you want to safely traverse an `IEnumerable<T>` multiple times, you have to
 
 Every component in Unity extends the class `UnityEngine.MonoBehaviour`. However, if you want all features from the CoreLibrary you should extend `CoreLibrary.Base.BaseBehaviour` instead, which itself extends `MonoBehaviour`.
 
-`BaseBehaviour` lets you use shortcuts to `SetPerceivable`, `AssignComponent`, `AssignIfAbsent` and `IfAbsentCompute` as described later.
+`BaseBehaviour` lets you use shortcuts to `SetPerceivable`, `AssignComponent`, `AssignIfAbsent` and `IfAbsentCompute` among others as described later.
 
 An added bonus is the `public Position` property, which behaves *exactly* like `.transform.position` except that it *also* enables you to modify single coordinates directly:
 

@@ -42,6 +42,21 @@ namespace CoreLibrary.Tests
             MeshRenderer rend;
             Assert.Throws<ComponentNotFoundException>(() => uut.AssignComponent(out rend));
         }
+        
+        [Test]
+        public void TestSimpleAssignComponentOrAdd()
+        {
+            var uut = new GameObject();
+            var rb = uut.AddComponent<Rigidbody>();
+            
+            Rigidbody expected;
+            uut.AssignComponentOrAdd(out expected);
+            Assert.AreEqual(rb, expected);
+
+            MeshRenderer rend;
+            uut.AssignComponentOrAdd(out rend);
+            Assert.That(Util.IsNull(rend), Is.False);
+        }
 
         [Test]
         public void TestSimpleAssignIfAbsent()
@@ -56,6 +71,28 @@ namespace CoreLibrary.Tests
             var oldExpected = expected;
             Assert.IsFalse(uut.AssignIfAbsent(ref expected));
             Assert.AreSame(oldExpected, expected);
+            
+            MeshRenderer rend = null;
+            Assert.Throws<ComponentNotFoundException>(() => uut.AssignIfAbsent(ref rend));
+        }
+        
+        [Test]
+        public void TestSimpleAssignIfAbsentOrAdd()
+        {
+            var uut = new GameObject();
+            var rb = uut.AddComponent<Rigidbody>();
+            var expected = default(Rigidbody);
+            
+            Assert.IsTrue(uut.AssignIfAbsentOrAdd(ref expected));
+            Assert.AreEqual(rb, expected);
+
+            var oldExpected = expected;
+            Assert.IsFalse(uut.AssignIfAbsentOrAdd(ref expected));
+            Assert.AreSame(oldExpected, expected);
+            
+            MeshRenderer rend = null;
+            Assert.That(uut.AssignIfAbsentOrAdd(ref rend), Is.True);
+            Assert.That(Util.IsNull(rend), Is.False);
         }
 
         private static GameObject NewGameObject(GameObject parent, string name = null)

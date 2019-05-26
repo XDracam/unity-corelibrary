@@ -57,6 +57,20 @@ namespace CoreLibrary
 		{
 			return gameObject.AssignIfAbsent(ref variable, where);
 		}
+		
+		/// <inheritdoc cref="ComponentQueryExtensions.AssignComponentOrAdd{T}(GameObject, out T, Search)"/>
+		/// <seealso cref="ComponentQueryExtensions.AssignComponentOrAdd{T}(GameObject, out T, Search)"/>
+		protected void AssignComponentOrAdd<T>(out T variable, Search where = Search.InObjectOnly) where T : Component
+		{
+			gameObject.AssignComponentOrAdd(out variable, where);
+		}
+		
+		/// <inheritdoc cref="ComponentQueryExtensions.AssignIfAbsentOrAdd{T}(GameObject, ref T, Search)"/>
+		/// <seealso cref="ComponentQueryExtensions.AssignIfAbsentOrAdd{T}(GameObject, ref T, Search)"/>
+		protected bool AssignIfAbsentOrAdd<T>(ref T variable, Search where = Search.InObjectOnly) where T : Component
+		{
+			return gameObject.AssignIfAbsentOrAdd(ref variable, where);
+		}
 
 		/// <inheritdoc cref="Util.IfAbsentCompute{T}(ref T, Func{T})"/>
 		/// <seealso cref="Util.IfAbsentCompute{T}(ref T, Func{T})"/>

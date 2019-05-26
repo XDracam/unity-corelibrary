@@ -86,6 +86,12 @@ public class SampleComponent : BaseBehaviour
 
 Note that both of these methods could be implemented through `Util.IfAbsentCompute<T>(ref T field, Func<T> getter)` (See [the chapter about Utilities](Utilities)).
 
+## `AssignComponentOrAdd<T>` and `AssignIfAbsentOrAdd<T>`
+
+Sometimes, you are lazy. Or you want to make sure, that your script works under *all* circumstances, even if it cannot find a certain component in a child object. For this use cases, the CoreLibrary provides `AssignComponentOrAdd<T>` as well it's equaivalent `AssignIfAbsentOrAdd<T>`. 
+
+These methods behave exactly like their counterparts explained above, except that they add a new component of type `T` to the current game object if no suitable component could be found instead of throwing an exception. Another notable difference is the constraint on `T`: You cannot use an interface type for `T`, since unity requires a concrete `T : Component` in order to instantiate the new component and add it to the object.
+
 ## `Is<T>`, `As<T>` and `All<T>`
 
 Imagine you are an awesome flying space cat shooting your EMP laser eyes at multiple invading alien spacecraft stupidly flying in a straight row. All their antigravity drives deactivate and they fall to their deaths, exploding as they hit the hard and dry ground of the Arizona desert. **"What?"** - what?
