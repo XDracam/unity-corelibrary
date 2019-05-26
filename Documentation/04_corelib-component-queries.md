@@ -4,16 +4,16 @@
 
 In regular Unity, one may retrieve a game object's components by using `gameObject.GetComponent<Renderer>()`. However, this is not only verbose but also not very flexible. For example, `GetComponent` only searches in the object itself, not in it's children or parents. For both use cases other, even more verbose methods, exist. If you want to search the whole hierarchy, you have to manually merge the child search and the parent search.
 
-In order to improve overall conciseness and readability, the core library provides a number of special query methods, which will be presented in the rest of this page. All of these methods have an optional parameter `Search where`, which lets you decide the scope of the search. `Search` is an enum containing the values `InObjectOnly`, `InChildren`, `InParents` and `InWholeHierarchy`. The default is always `InObjectOnly`. `InChildren` does a depth-first search through all the children until an instance of the requested component is found. `InParents` linearly traverses all parents until the scene root or until the requested component is found. `InWholeHierarchy` searches the parents first for efficiency reasons, then the children. In all cases, the object itself is searched first. For efficiency reasons, all searches redirect to their more verbose Unity counterparts.
+In order to improve overall conciseness and readability, the core library provides a number of special query methods, which will be presented in the rest of this page. All of these methods have an optional parameter `Search where`, which lets you decide the scope of the search. `Search` is an enum containing the values `InObjectOnly`, `InChildren`, `InParents` and `InWholeHierarchy`. The default is always `InObjectOnly`. `InChildren` does a depth-first search through all the children until an instance of the requested component is found. `InParents` linearly traverses all parents until the scene root or until the requested component is found. `InWholeHierarchy` searches the parents first for efficiency reasons, then the children. In all cases, the object itself is searched first. For efficiency reasons, all searches redirect to their more verbose Unity counterparts. The types which can be searched do *not* need to extend `UnityEngine.Component`, because we want to allow querying for interfaces as well.
 
 The rest of this page explains all queries by first presenting how it is usually done followed by a proper use case of the corresponding CoreLibrary query.
 
 ## `AssignComponent<T>` and `AssignIfAbsent<T>`
 
-Usually, finding other relevant components on the same game object and saving them into instance fields is a tedious but necessary task, since `GetComponent` can be an expensive call and should therefore not be called every frame. For this, we extend the `GameObject` class with two extension methods:
+Usually, finding other relevant components on the same game object and saving them into instance fields is a tedious but necessary task, since `GetComponent` can be an expensive call and should therefore not be called more than necessary. For this reason, we extend the `GameObject` class with two extension methods:
 
--  `void AssignComponent<T>(out T variable, Search where = Search.InObjectOnly) where T:Component`
--  `bool AssignIfAbsent<T>(ref T variable, Search where = Search.InObjectOnly) where T:Component`
+-  `void AssignComponent<T>(out T variable, Search where = Search.InObjectOnly) where T : class`
+-  `bool AssignIfAbsent<T>(ref T variable, Search where = Search.InObjectOnly) where T : class`
 
 Both of these methods are also handily available in `BaseBehaviour`.
 Consider the following code:

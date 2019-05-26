@@ -101,14 +101,14 @@ namespace CoreLibrary
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
         /// <typeparam name="T">The type of the component to find.</typeparam>
         /// <returns>true if any object in the specified search scope has a component of type T.</returns>
-        public static bool Is<T>(this GameObject go, Search where = Search.InObjectOnly) where T : Component
+        public static bool Is<T>(this GameObject go, Search where = Search.InObjectOnly) where T : class
         {
             var res = go.As<T>(where);
             return res != null;
         }
 
         /// <inheritdoc cref="Is{T}(GameObject, Search)"/>
-        public static bool Is<T>(this Transform tr, Search where = Search.InObjectOnly) where T : Component
+        public static bool Is<T>(this Transform tr, Search where = Search.InObjectOnly) where T : class
         {
             return tr.gameObject.Is<T>(where);
         }
@@ -116,7 +116,7 @@ namespace CoreLibrary
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
         /// <typeparam name="T">The type of the component to find.</typeparam>
         /// <returns>The first component of type T found in the search scope or null if not found.</returns>
-        [CanBeNull] public static T As<T>(this GameObject go, Search where = Search.InObjectOnly) where T : Component
+        [CanBeNull] public static T As<T>(this GameObject go, Search where = Search.InObjectOnly) where T : class
         {
             switch (where)
             {
@@ -139,7 +139,7 @@ namespace CoreLibrary
         }
 
         /// <inheritdoc cref="As{T}(GameObject, Search)"/>
-        [CanBeNull] public static T As<T>(this Transform tr, Search where = Search.InObjectOnly) where T : Component
+        [CanBeNull] public static T As<T>(this Transform tr, Search where = Search.InObjectOnly) where T : class
         {
             return tr.gameObject.As<T>(where);
         }
@@ -147,7 +147,7 @@ namespace CoreLibrary
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
         /// <typeparam name="T">The type of the component to find.</typeparam>
         /// <returns>A lazily generated IEnumerable of all components of type T found in the search scope. Might be empty.</returns>
-        [NotNull] public static IEnumerable<T> All<T>(this GameObject go, Search where = Search.InObjectOnly) where T : Component
+        [NotNull] public static IEnumerable<T> All<T>(this GameObject go, Search where = Search.InObjectOnly) where T : class
         {
             switch (where)
             {
@@ -168,7 +168,7 @@ namespace CoreLibrary
         }
 
         /// <inheritdoc cref="All{T}(GameObject, Search)"/>
-        [NotNull] public static IEnumerable<T> All<T>(this Transform tr, Search where = Search.InObjectOnly) where T : Component
+        [NotNull] public static IEnumerable<T> All<T>(this Transform tr, Search where = Search.InObjectOnly) where T : class
         {
             return tr.gameObject.All<T>(where);
         }
@@ -182,7 +182,7 @@ namespace CoreLibrary
         /// <typeparam name="T">The type of the component to find.</typeparam>
         /// <exception cref="Exception">If there was no component to be found in the specified search scope.</exception>
         public static void AssignComponent<T>(this GameObject go, out T variable, Search where = Search.InObjectOnly)
-            where T : Component
+            where T : class
         {
             T found = go.As<T>();
             if (found == null)
@@ -204,7 +204,7 @@ namespace CoreLibrary
         /// <returns>true if new value was assigned, false if variable already has a value.</returns>
         /// <exception cref="Exception">If there was no component to be found in the specified search scope.</exception>
         public static bool AssignIfAbsent<T>(this GameObject go, ref T variable, Search where = Search.InObjectOnly)
-            where T : Component
+            where T : class
         {
             if (variable != default(T)) // safer than null
             {

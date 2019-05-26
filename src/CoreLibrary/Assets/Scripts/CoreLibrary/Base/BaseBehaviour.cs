@@ -45,14 +45,14 @@ namespace CoreLibrary
 
 		/// <inheritdoc cref="ComponentQueryExtensions.AssignComponent{T}(GameObject, out T, Search)"/>
 		/// <seealso cref="ComponentQueryExtensions.AssignComponent{T}(GameObject, out T, Search)"/>
-		protected void AssignComponent<T>(out T variable, Search where = Search.InObjectOnly) where T:Component
+		protected void AssignComponent<T>(out T variable, Search where = Search.InObjectOnly) where T : class
 		{
 			gameObject.AssignComponent(out variable, where);
 		}
 
 		/// <inheritdoc cref="ComponentQueryExtensions.AssignIfAbsent{T}(GameObject, ref T, Search)"/>
 		/// <seealso cref="ComponentQueryExtensions.AssignIfAbsent{T}(GameObject, ref T, Search)"/>
-		protected bool AssignIfAbsent<T>(ref T variable, Search where = Search.InObjectOnly) where T:Component
+		protected bool AssignIfAbsent<T>(ref T variable, Search where = Search.InObjectOnly) where T : class
 		{
 			return gameObject.AssignIfAbsent(ref variable, where);
 		}	
