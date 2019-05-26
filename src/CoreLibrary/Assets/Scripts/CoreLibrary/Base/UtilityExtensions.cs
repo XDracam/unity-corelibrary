@@ -30,7 +30,7 @@ namespace CoreLibrary
 
         /// <inheritdoc cref="Util.IsNull{T}"/>
         [Pure]
-        public static bool IsNull<T>(this T value)
+        public static bool IsNull<T>(this T value) where T : class
         {
             return Util.IsNull(value);
         }

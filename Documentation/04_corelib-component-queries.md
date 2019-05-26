@@ -84,6 +84,8 @@ public class SampleComponent : BaseBehaviour
 
 `AssignIfAbsent` is particularly useful to avoid potential multiple calls to `AssignComponent`, which repeats the search every time. You can use it for loading a component lazily or *on demand*: Consider some object with an `Animator` that is only needed in one specific way of interacting with it. There are hundreds of these objects in the scene and you are only going to interact with very few of them, and with some of them multiple times. Now, calling `AssignComponent` somewhere in `Start` is wasted computing time 90% of the time. Calling `AssignComponent` every time the interaction happens may waste valuable resources on redundant searches. In this case `AssignIfAbsent` offers an efficient solution, as the cost of re-searching is only one very cheap `null`-check. The `bool` return value may be ignored in this case.
 
+Note that both of these methods could be implemented through `Util.IfAbsentCompute<T>(ref T field, Func<T> getter)` (See [the chapter about Utilities](Utilities)).
+
 ## `Is<T>`, `As<T>` and `All<T>`
 
 Imagine you are an awesome flying space cat shooting your EMP laser eyes at multiple invading alien spacecraft stupidly flying in a straight row. All their antigravity drives deactivate and they fall to their deaths, exploding as they hit the hard and dry ground of the Arizona desert. **"What?"** - what?

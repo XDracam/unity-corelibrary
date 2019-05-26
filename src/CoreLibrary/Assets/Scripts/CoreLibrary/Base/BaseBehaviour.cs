@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CoreLibrary
 {
@@ -49,12 +50,19 @@ namespace CoreLibrary
 		{
 			gameObject.AssignComponent(out variable, where);
 		}
-
+		
 		/// <inheritdoc cref="ComponentQueryExtensions.AssignIfAbsent{T}(GameObject, ref T, Search)"/>
 		/// <seealso cref="ComponentQueryExtensions.AssignIfAbsent{T}(GameObject, ref T, Search)"/>
 		protected bool AssignIfAbsent<T>(ref T variable, Search where = Search.InObjectOnly) where T : class
 		{
 			return gameObject.AssignIfAbsent(ref variable, where);
-		}	
+		}
+
+		/// <inheritdoc cref="Util.IfAbsentCompute{T}(ref T, Func{T})"/>
+		/// <seealso cref="Util.IfAbsentCompute{T}(ref T, Func{T})"/>
+		protected bool IfAbsentCompute<T>(ref T field, Func<T> getter)
+		{
+			return Util.IfAbsentCompute(ref field, getter);
+		}
 	}
 }

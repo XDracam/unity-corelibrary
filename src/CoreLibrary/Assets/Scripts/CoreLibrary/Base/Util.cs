@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace CoreLibrary
 {
@@ -33,7 +33,31 @@ namespace CoreLibrary
         /// </summary>
         [Pure] public static bool IsNull<T>(T value)
         {
-            return value == null || value is Object && value as Object == null;
+            // a `where T : class` constraint is not possible, since that would disallow nullables.
+            return value == null || value is UnityEngine.Object && value as UnityEngine.Object == null;
+        }
+        
+        /// <summary>
+        /// A field is not assigned if its value is equal to either its
+        /// default value, null, or Unity's definition of equal to null.
+        /// <br/>
+        /// If the specified field is not assigned yet, it is assigned the
+        /// result of calling the specified getter and true is returned.
+        /// <br/>
+        /// Otherwise the field remains unchanged, the getter
+        /// is never called and the operation returns false.
+        /// </summary>
+        public static bool IfAbsentCompute<T>(ref T field, [NotNull] Func<T> getter)
+        {
+            if (IsNull(field) || EqualityComparer<T>.Default.Equals(field, default(T)))      
+            {
+                field = getter();
+                return true;
+            }
+
+            Vector3 foo;
+
+            return false;
         }
         
         /// <summary>
@@ -120,5 +144,6 @@ namespace CoreLibrary
                 return new VectorProxy(vec);
             }
         }
+
     }
 }

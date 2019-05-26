@@ -31,6 +31,51 @@ Since type `T` is not constrained (e.g. by a `where T : Component`), the compile
 
 In order to achieve proper null checks for unconstrained generic types which might be components, the CoreLibrary provides the `Util.IsNull<T>(T value)` function, which works for any type and has a special fix for Unity `Component`s built in.
 
+## IfAbsentCompute
+
+When you instantiate a new game object from an existing one during runtime, all the object's field are already set. In this case, you would not want to repopulate all fields in the `Start` and `Awake` methods of each attached behaviour. To fix this, you would add an `if (myField != null)` before every single field that could be unnecessarily reassigned. This adds a lot to complexity, and other developers reading your code might not get your idea and remove these 'unnecessary' checks.
+
+As a programmer, you want to clearly state your intentions. This is why the CoreLibrary provides the `bool IfAbsentCompute<T>(ref T field, Func<T> getter)` method on `Util` as well as on `BaseBehaviour`. If the passed reference to a field is either null, equal to null according to Unity or equal to its default value (if it's a value type), it is assigned the result of calling the `getter` function and `true` is returned. Otherwise, the value of the passed field remains untouched, `getter` is never called and `false` is returned.
+
+Using this method has one notable disadvantage: C# makes sure that `ref` parameter are always initialized beforehand. So instead of
+
+```cs
+// without CoreLibrary
+
+private Renderer _renderer;
+private Collider _collider;
+private Vector3 _startOffset;
+
+public GameObject OtherObject;
+
+private void Start() 
+{
+	if (_renderer != null) _renderer = GetComponent<Renderer>();
+	if (_collider != null) _collider = GetComponent<Collider>();
+	if (_startOffset == Vector3.zero) _startOffset = transform.position - OtherObject.transform.position;
+}
+```
+
+you now have to write
+
+```cs
+// with CoreLibrary
+
+// explicit assignments necessary for use as ref params
+private Renderer _renderer = null;
+private Collider _collider = null;
+private Vector3 _startOffset = default(Vector3);
+
+public GameObject OtherObject;
+
+private void Start() 
+{
+	IfAbsentCompute(ref _renderer, () => this.As<Renderer>());
+	IfAbsentCompute(ref _collider, () => this.As<Renderer>());
+	IfAbsentCompute(ref _startOffset, () => Position - OtherObject.transform.position);
+}
+```
+
 ## VectorProxy
 
 Unity has a problem in that you can not write the following line of code:
