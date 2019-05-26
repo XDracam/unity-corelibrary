@@ -22,12 +22,9 @@ namespace CoreLibrary
         /// An IEnumerable containing all the children of
         /// this Transform in order. <b>Iterable only once</b>.
         /// </summary>
-        [Pure] public static IEnumerable<Transform> GetChildren(this Transform t)
+        [Pure] public static IEnumerable<Transform> GetChildren(this Transform transform)
         {
-            for (var i = 0; i < t.childCount; ++i)
-            {
-                yield return t.GetChild(i);
-            }
+            foreach (Transform child in transform) yield return child;
         }
 
         /// <inheritdoc cref="Util.IsNull{T}"/>
