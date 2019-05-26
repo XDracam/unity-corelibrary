@@ -2,3 +2,7 @@
 build/
 reports/
 current-package/
+
+# Project specific
+Screens/
+src/CoreLibrary/.vscode/

@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace CoreLibrary
 {
@@ -11,7 +10,7 @@ namespace CoreLibrary
 	/// </summary>
 	public class BaseBehaviour : MonoBehaviour
 	{
-		private Util.VectorProxy _proxy;
+		private Util.VectorProxy _positionProxy;
 
 		/// <summary>
 		/// Returns the position of this component as a <see cref="Util.VectorProxy"/>.
@@ -23,15 +22,16 @@ namespace CoreLibrary
 		{
 			get
 			{
-				if (_proxy != null) 
-					return _proxy;
-				_proxy = new Util.VectorProxy(
+				if (_positionProxy != null) 
+					return _positionProxy;
+				_positionProxy = new Util.VectorProxy(
 					() => transform.position, 
 					pos => transform.position = pos);
-				return _proxy;
+				return _positionProxy;
 			}
 			set { transform.position = value; }
 		}
+		
 		
 		/// <summary>
 		/// A game object is not perceivable if it has no active collider and renderer.
