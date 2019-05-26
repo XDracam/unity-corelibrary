@@ -19,8 +19,9 @@ namespace CoreLibrary
         //==============================
 
         /// <summary>
-        /// An IEnumerable containing all the children of
-        /// this Transform in order. <b>Iterable only once</b>.
+        /// An IEnumerable containing all the children of this Transform in order.
+        /// It is safe to modify the transforms children during iteration.
+        /// <b>Iterable only once</b>.
         /// </summary>
         [Pure] public static IEnumerable<Transform> GetChildren(this Transform transform)
         {
@@ -35,7 +36,7 @@ namespace CoreLibrary
         }
 
         /// <summary>
-        /// A game object is not percievable if it has no active collider and renderer.
+        /// A game object is not perceivable if it has no active collider and renderer.
         /// Used instead of deactivation to enable coroutines and sounds to continue to play.
         /// </summary>
         public static void SetPerceivable(this GameObject gameObject, bool state)

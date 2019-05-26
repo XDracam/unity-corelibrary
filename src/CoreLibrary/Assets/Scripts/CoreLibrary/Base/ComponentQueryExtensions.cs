@@ -26,7 +26,7 @@ namespace CoreLibrary
             {
                 var res = mapper(go);
                 if (!Util.IsNull(res)) return res;
-                if (go.transform.parent == null) return null;
+                if (Util.IsNull(go.transform.parent)) return null;
                 go = go.transform.parent.gameObject;
             }
         }
@@ -104,7 +104,7 @@ namespace CoreLibrary
         public static bool Is<T>(this GameObject go, Search where = Search.InObjectOnly) where T : class
         {
             var res = go.As<T>(where);
-            return res != null;
+            return !Util.IsNull(res);
         }
 
         /// <inheritdoc cref="Is{T}(GameObject, Search)"/>
@@ -185,7 +185,7 @@ namespace CoreLibrary
             where T : class
         {
             T found = go.As<T>();
-            if (found == null)
+            if (Util.IsNull(found))
                 throw new ComponentNotFoundException(
                     "Failed to assign component of type " + typeof(T) + " to " + go + ".");
 

@@ -6,13 +6,13 @@ The CoreLibrary comes with no dependencies or requirements other than *Unity 201
 
 Everything should work with *C#4 (.NET 3.5)* and further versions out of the box. However, all following examples assume you use *C#6 (.NET 4.x)* or higher.
 
-You can work with any editor or IDE, however I *highly recommend using either Visual Studio with [JetBrains ReSharper](https://www.jetbrains.com/resharper/) or the [JetBrains Rider](https://www.jetbrains.com/rider/) IDE* in order to make full use of the supplied annotations and keep code quality high.
+You can work with any editor or IDE, however I *highly recommend using either Visual Studio with [JetBrains ReSharper](https://www.jetbrains.com/resharper/) or the [JetBrains Rider](https://www.jetbrains.com/rider/) IDE* in order to make full use of the supplied annotations and keep code quality high. 
 
 *(I am not affiliated with Microsoft or JetBrains in any way)*
 
 ## Usage
 
-Paste the `CoreLibrary` folder from the [GitHub repo](???) into your `Scripts` folder or download from the [Asset Store](???). Then add the line 
+Paste the `CoreLibrary` folder from the [GitHub repo](https://github.com/XDracam/unity-corelibrary) into your `Scripts` folder or download from the [Asset Store](???). Then add the line 
 ```cs
 using CoreLibrary;
 ``` 
@@ -46,12 +46,23 @@ This is implemented using the `Util.[VectorProxy]` class.
 
 `foo.IsNull()` is a more safe version of `foo == null`, which accounts for Unity's custom override of the `==` operator on components. You should only use this when working with a generic type `T` that does *not always* extend `UnityEngine.Component` or some subclass of it. For more information see the section [Generic Null Check].
 
-`Transform.GetChildren()` is something urgently missing from Unity. Without it, you have to use something along the lines of:
+`Transform.GetChildren()` is something urgently missing from Unity. Without it, when you want to use LINQ methods over all children, you have to use something along the lines of:
+
+```cs
+var children = new List<Transform>();
+foreach (Transform t in transform) children.Add(t);
+children.Select(...)...;
+```
+
+or even worse
 
 ```cs
 var children = new List<Transform>(); 
-for (var i = 0; i < t.childCount(); ++i) children.Add(t.GetChild(i))
+for (var i = 0; i < transform.childCount(); ++i) children.Add(transform.GetChild(i));
+children.Select(...)...;
 ```
+
+`GetChildren` is actually implemented using `foreach` over the transform it is called on, since it is safe to add, remove and move children while iterating without causing weird bugs. 
 
 In order to efficiently chain further LINQ queries (such as `.Find`, `.Where` etc.) the method returns an `IEnumerable<T>`, which is only **traversable once**.
 
