@@ -31,7 +31,32 @@ Since type `T` is not constrained (e.g. by a `where T : Component`), the compile
 
 In order to achieve proper null checks for unconstrained generic types which might be components, the CoreLibrary provides the `Util.IsNull<T>(T value)` function, which works for any type and has a special fix for Unity `Component`s built in.
 
-## IfAbsentCompute
+## `Object.SafeDestroy()`
+
+Unity [strongly discourages you](https://docs.unity3d.com/ScriptReference/Object.DestroyImmediate.html) from using `Object.DestroyImmediate(obj)` instead of `Object.Destroy(obj)`. However, when writing editor code, the delayed destruction caused by `Destroy(obj)` is never executed.
+This poses a difficulty when writing code that is used both in the editor as well as during rumtime. So you might end up with a code snippet like this:
+
+```cs
+// without CoreLibrary
+
+#if UNITY_EDITOR
+            if (!UnityEditor.EditorApplication.isPlaying)
+                UnityEngine.Object.DestroyImmediate(obj);
+            else
+#endif
+            UnityEngine.Object.Destroy(obj);
+
+```
+
+Pretty ugly and distracting, right? For this special case, the CoreLibrary provides the `obj.SafeDestroy()` extension method for your shared code needs:
+
+```cs
+// with CoreLibrary
+
+obj.SafeDestroy();
+```
+
+## `IfAbsentCompute`
 
 When you instantiate a new game object from an existing one during runtime, all the object's field are already set. In this case, you would not want to repopulate all fields in the `Start` and `Awake` methods of each attached behaviour. To fix this, you would add an `if (myField != null)` before every single field that could be unnecessarily reassigned. This adds a lot to complexity, and other developers reading your code might not get your idea and remove these 'unnecessary' checks.
 
@@ -76,7 +101,7 @@ private void Start()
 }
 ```
 
-## VectorProxy
+## `VectorProxy`
 
 Unity has a problem in that you can not write the following line of code:
 

@@ -134,3 +134,7 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 Special thanks to [Daniel Götz](https://github.com/Eregerog) for constant feedback and motivated usage.
 
 Thanks to the BII GmbH for sponsoring development.
+
+## Other Useful Plugins
+
+- Rotary Heart offers a great implementation for [Serialized Dictionaries](https://assetstore.unity.com/packages/tools/utilities/serialized-dictionary-110992). This has been a requested feature, but there is no need to reinvent the wheel 😉

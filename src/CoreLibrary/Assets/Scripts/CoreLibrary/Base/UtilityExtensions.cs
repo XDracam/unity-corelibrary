@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace CoreLibrary
 {
@@ -49,6 +48,41 @@ namespace CoreLibrary
             foreach(var rend in allRenderer) rend.enabled = state;
             foreach(var col in allCollider) col.enabled = state;
             foreach(var col in allCollider2D) col.enabled = state;
+        }
+        
+        /// <summary>
+        /// Destroys the object in the recommended way.
+        /// Safe to use in code that is shared between editor and runtime.
+        /// <br/>
+        /// In Unity, it is recommended to always use Destroy(obj). However,
+        /// when used in editor code, object destruction is delayed forever.
+        /// For this reason, DestroyImmediate(obj) must be used in editor code.
+        /// This function encapsulates the preprocessor code necessary 
+        /// to determine whether the code is being run in editor mode.
+        /// <br/>
+        /// Note that transforms cannot be destroyed. When a user still
+        /// attempts to destroy a transform, a warning is logged and the
+        /// transforms game object is destroyed instead.
+        /// </summary>
+        /// <param name="obj"></param>
+        public static void SafeDestroy(this UnityEngine.Object obj) {
+            var transform = obj as Transform;
+            if (transform != null) {
+                transform.gameObject.SafeDestroy();
+                Debug.LogWarning(
+                    "Calling SafeDestroy() on a transform. " +
+                    "Destroying the GameObject instead, since transforms cannot be destroyed.");
+                return;
+            }
+
+#if UNITY_EDITOR
+            if (!UnityEditor.EditorApplication.isPlaying)
+            {
+                UnityEngine.Object.DestroyImmediate(obj);
+                return;
+            }
+#endif
+            UnityEngine.Object.Destroy(obj);
         }
 
         //=================================

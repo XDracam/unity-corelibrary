@@ -37,10 +37,10 @@ namespace CoreLibrary
                     Debug.Log("Creating new instance of lazy singleton " + typeof(T).Name);
 #if UNITY_EDITOR
                     // Using a LazySingleton in an editor script causes an object
-                    // to be added to the current scene. Therefore we need to mark
-                    // the scene as dirty, so that it as registered as having unsaved changes.
+                    // to be added to any open scene. Therefore we need to mark all
+                    // scenes as dirty, so that they are registered as having unsaved changes.
                     if (!Application.isPlaying)
-                        EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+                        EditorSceneManager.MarkAllScenesDirty();
 #endif
                 }
                 else _instance = tmp[0];
