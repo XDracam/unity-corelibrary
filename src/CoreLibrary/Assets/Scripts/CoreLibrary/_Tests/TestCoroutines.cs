@@ -13,6 +13,28 @@ namespace CoreLibrary.Tests
     public class TestCoroutines
     {
         [UnityTest]
+        public IEnumerator DELETEME()
+        {
+            var res = new WaitForFixedUpdate();
+
+            var start = Time.time;
+
+            yield return res;
+            Assert.GreaterOrEqual(Time.time, start + Time.fixedDeltaTime / 2);
+            Assert.LessOrEqual(Time.time, start + Time.fixedDeltaTime / 2 + Time.fixedDeltaTime);
+            
+            yield return res;
+            Assert.GreaterOrEqual(Time.time, start + Time.fixedDeltaTime / 2 + Time.fixedDeltaTime);
+            Assert.LessOrEqual(Time.time, start + Time.fixedDeltaTime / 2 + Time.fixedDeltaTime * 2);
+            
+            yield return res;
+            Assert.GreaterOrEqual(Time.time, start + Time.fixedDeltaTime / 2 + Time.fixedDeltaTime * 2);
+            Assert.LessOrEqual(Time.time, start + Time.fixedDeltaTime / 2 + Time.fixedDeltaTime * 3);
+            
+        }
+        
+        
+        [UnityTest]
         public IEnumerator TestWaitUntil()
         {
             var cond = false;

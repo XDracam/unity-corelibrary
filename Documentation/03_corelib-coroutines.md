@@ -124,7 +124,7 @@ public class BottleRocket : BaseBehaviour
         RepeatWhile(
             () => _launchTime + FlightTime < Time.time,
             () => _rb.AddForce(Vector3.up * 100),
-            fixedUpdate: true
+            () => new WaitForFixedUpdate()
         ).Start();
     }
 
@@ -141,7 +141,9 @@ The notation `() => doSomething()` is called an *anonymous function* or *lambda*
 
 An alternative to writing `() => doSomething()` is `() => {return doSomething();}`. By using curly braces after the arrow you can use more than one statement in a lambda, using them to pass more complex blocks of code to our custom control structures.
 
-The `fixedUpdate: true` is a named parameter. In the case above we could just write `true`, but prefixing boolean parameters with the argument name makes the code more readable. Every control structure that executes code every frame has an optional `fixedUpdate` parameter as last argument which defaults to false.
+The `RepeatWhile` and `WaitUntil` methods have an optional last argument of type `Func<object>`. This is a 'getter' - a function which is called every time the condition is checked and which determines what should be `yield return`ed. Since Unity can work with types which extend both `YieldInstruction` as well as `CustomYieldInstruction` without providing a common supertype, the CoreLibrary has to allow any type to be yielded. This is not less safe than writing coroutines the regular way, since Unity itself does not enforce any type safety in coroutine yield results. Since the yielded value could change during execution of the coroutine, the CoreLibrary uses a function and not just a simple value.
+
+The `RepeatForSeconds`, `RepeatForFrames` and `DelayForFrames` methods have an optional `bool fixedUpdate = false` parameter. By default, these functions cause execution to halt until the next `Update` cycle. However, if you want to use these every `FixedUpdate` instead, you can pass `fixedUpdate: true` as last argument. The `fixedUpdate: true` is a named parameter. Prefixing boolean parameters with the argument name makes the code more readable and is often considered a best practice. 
 
 The goal of this module is to *keep the definition in a concurrent task as local as possible*, as the more state a class has, the harder it is to understand what it is actually doing. And having the definition for a single task in one place is much easier to understand than when you have to jump between `private` functions and keep parameters and fields in mind.
 
@@ -168,7 +170,7 @@ public void PlaySound(uint n)
 
 private IEnumerator DelayPlayingSound(uint n) 
 {
-    for (var i = 0; i < n; ++i) yield return null;
+    for (var i = 0; i < n; ++i) yield return new WaitForFixedUpdate();
     sound.Play();
 }
 ```
@@ -177,7 +179,7 @@ Now, for every delayed action you'll have to write another method-coroutine-pair
 
 ```cs
 // -- after
-public void PlaySound(uint n) => DelayForFrames(n, () => sound.Play()).Start();
+public void PlaySound(uint n) => DelayForFrames(n, () => sound.Play(), fixedUpdate: true).Start();
 ```
 
 C# 6.0 allows you to shorten single-line function bodies into a `declaration => expression;` for readability. This is completely optional, but shorter. This notation is especially useful for providing a lot of simple methods without polluting the class with way too many lines holding only curly braces.

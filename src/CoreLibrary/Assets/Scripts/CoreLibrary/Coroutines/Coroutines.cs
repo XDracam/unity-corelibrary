@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -278,15 +279,18 @@ namespace CoreLibrary
         /// <param name="afterwards">
         /// The block of code to be executed once the condition evaluates to true.
         /// </param>
-        /// <param name="fixedUpdate">
-        /// If true, executes the action once per fixedUpdate.
-        /// Otherwise once per frame. Defaults to false.
+        /// <param name="yieldInstructionGetter">
+        /// A function which returns the object which should be yielded to the Unity runtime
+        /// after each condition check. If null, yields null and waits for the next frame.
         /// </param>
         // ReSharper disable once InvalidXmlDocComment
         [Pure] public static IEnumerator WaitUntil([NotNull] Condition condition, [CanBeNull] CodeBlock afterwards = null,
-            bool fixedUpdate = false)
+            Func<object> yieldInstructionGetter = null)
         {
-            while(!condition()) yield return fixedUpdate ? new WaitForFixedUpdate() : null;
+            while(!condition()) yield return 
+                yieldInstructionGetter != null 
+                ? yieldInstructionGetter.Invoke() 
+                : null;
             if (afterwards != null) afterwards.Invoke();
         }
 
@@ -295,10 +299,6 @@ namespace CoreLibrary
         /// </summary>
         /// <param name="afterwards">
         /// The block of code to be executed once the specified number of frames have passed.
-        /// </param>
-        /// <param name="fixedUpdate">
-        /// If true, executes the action once per fixedUpdate.
-        /// Otherwise once per frame. Defaults to false.
         /// </param>
         // ReSharper disable all InvalidXmlDocComment
         [Pure] public static IEnumerator DelayForFrames(uint frames, [CanBeNull] CodeBlock afterwards = null,
@@ -366,17 +366,20 @@ namespace CoreLibrary
         /// </summary>
         /// <param name="action">The body of the loop</param>
         /// <param name="condition">Execute the action as long as this function returns true</param>
-        /// <param name="fixedUpdate">
-        /// If true, executes the action once per fixedUpdate.
-        /// Otherwise once per frame. Defaults to false.
+        /// <param name="yieldInstructionGetter">
+        /// A function which returns the object which should be yielded to the Unity runtime
+        /// after each condition check. If null, yields null and waits for the next frame.
         /// </param>
         [Pure] public static IEnumerator RepeatWhile([NotNull] Condition condition, [NotNull] CodeBlock action,
-            bool fixedUpdate = false)
+            Func<object> yieldInstructionGetter = null)
         {
             while (condition())
             {
                 action();
-                yield return fixedUpdate ? new WaitForFixedUpdate() : null;
+                yield return 
+                    yieldInstructionGetter != null 
+                    ? yieldInstructionGetter.Invoke() 
+                    : null;
             }
         }
 
