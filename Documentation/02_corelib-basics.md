@@ -54,7 +54,7 @@ foreach (Transform t in transform) children.Add(t);
 children.Select(...)...;
 ```
 
-or even worse
+... or even worse:
 
 ```cs
 var children = new List<Transform>(); 
