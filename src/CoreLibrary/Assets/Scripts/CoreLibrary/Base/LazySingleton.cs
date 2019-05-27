@@ -1,8 +1,5 @@
-using System;
 using CoreLibrary.Exceptions;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace CoreLibrary
 {
@@ -40,7 +37,7 @@ namespace CoreLibrary
                     // to be added to any open scene. Therefore we need to mark all
                     // scenes as dirty, so that they are registered as having unsaved changes.
                     if (!Application.isPlaying)
-                        EditorSceneManager.MarkAllScenesDirty();
+                        UnityEditor.SceneManagement.EditorSceneManager.MarkAllScenesDirty();
 #endif
                 }
                 else _instance = tmp[0];

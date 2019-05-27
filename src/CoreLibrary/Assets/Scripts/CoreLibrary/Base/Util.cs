@@ -54,9 +54,7 @@ namespace CoreLibrary
                 field = getter();
                 return true;
             }
-
-            Vector3 foo;
-
+            
             return false;
         }
         
