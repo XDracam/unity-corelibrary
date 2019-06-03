@@ -7,7 +7,7 @@ using UnityEngine;
 namespace CoreLibrary
 {
     /// <summary>
-    /// Author: Cameron Reuschel
+    /// Authors: Cameron Reuschel, Daniel Götz
     /// <br/><br/>
     /// Holds a number of extension methods to find a game object's
     /// components of a certain type in a concise and flexible manner.
@@ -98,14 +98,47 @@ namespace CoreLibrary
         {
             return tr.gameObject.Find<T>(fn, where);
         }
+        
+        /// <example>
+        /// Intended use:
+        /// Before C# 7
+        /// <code>
+        /// Collider result;
+        /// if(gameObject.Is{Collider}(out result))
+        ///     result.trigger = true;
+        /// </code>
+        /// After C# 7
+        /// <code>
+        /// if(gameObject.Is{Collider}(out var result))
+        ///     result.trigger = true;
+        /// </code>
+        /// </example>
+        /// <param name="result">If the component T has been found, it will be assigned to this variable</param>
+        /// <param name="where">Optional search scope if the object itself does not have the component.</param>
+        /// <typeparam name="T">The type of the component to find.</typeparam>
+        /// <returns>true if any object in the specified search scope has a component of type T.</returns>
+        public static bool Is<T>(this GameObject go, out T result, Search where = Search.InObjectOnly) where T : class{
+            result = go.As<T>(where);
+            return !Util.IsNull(result);
+        }
+
+        /// <inheritdoc cref="Is{T}(GameObject, T, Search)"/>
+        public static bool Is<T>(this Component comp, out T result, Search where = Search.InObjectOnly) where T : class{
+            return comp.gameObject.Is<T>(out result, where);
+        }
+
+        /// <inheritdoc cref="Is{T}(GameObject, T, Search)"/>
+        public static bool Is<T>(this Collision col, out T result, Search where = Search.InObjectOnly) where T : class {
+            return col.gameObject.Is<T>(out result, where);
+        }
 
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
         /// <typeparam name="T">The type of the component to find.</typeparam>
         /// <returns>true if any object in the specified search scope has a component of type T.</returns>
         public static bool Is<T>(this GameObject go, Search where = Search.InObjectOnly) where T : class
         {
-            var res = go.As<T>(where);
-            return !Util.IsNull(res);
+            T unused;
+            return go.Is<T>(out unused, where);
         }
 
         /// <inheritdoc cref="Is{T}(GameObject, Search)"/>
