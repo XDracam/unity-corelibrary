@@ -1,4 +1,4 @@
-﻿using JetBrains.Annotations;
+﻿using System;
 using UnityEngine;
 
 namespace CoreLibrary
@@ -11,7 +11,7 @@ namespace CoreLibrary
 	/// </summary>
 	public class BaseBehaviour : MonoBehaviour
 	{
-		private Util.VectorProxy _proxy;
+		private Util.VectorProxy _positionProxy;
 
 		/// <summary>
 		/// Returns the position of this component as a <see cref="Util.VectorProxy"/>.
@@ -23,15 +23,16 @@ namespace CoreLibrary
 		{
 			get
 			{
-				if (_proxy != null) 
-					return _proxy;
-				_proxy = new Util.VectorProxy(
+				if (_positionProxy != null) 
+					return _positionProxy;
+				_positionProxy = new Util.VectorProxy(
 					() => transform.position, 
 					pos => transform.position = pos);
-				return _proxy;
+				return _positionProxy;
 			}
 			set { transform.position = value; }
 		}
+		
 		
 		/// <summary>
 		/// A game object is not perceivable if it has no active collider and renderer.
@@ -45,16 +46,37 @@ namespace CoreLibrary
 
 		/// <inheritdoc cref="ComponentQueryExtensions.AssignComponent{T}(GameObject, out T, Search)"/>
 		/// <seealso cref="ComponentQueryExtensions.AssignComponent{T}(GameObject, out T, Search)"/>
-		protected void AssignComponent<T>(out T variable, Search where = Search.InObjectOnly) where T:Component
+		protected void AssignComponent<T>(out T variable, Search where = Search.InObjectOnly) where T : class
 		{
 			gameObject.AssignComponent(out variable, where);
 		}
-
+		
 		/// <inheritdoc cref="ComponentQueryExtensions.AssignIfAbsent{T}(GameObject, ref T, Search)"/>
 		/// <seealso cref="ComponentQueryExtensions.AssignIfAbsent{T}(GameObject, ref T, Search)"/>
-		protected bool AssignIfAbsent<T>(ref T variable, Search where = Search.InObjectOnly) where T:Component
+		protected bool AssignIfAbsent<T>(ref T variable, Search where = Search.InObjectOnly) where T : class
 		{
 			return gameObject.AssignIfAbsent(ref variable, where);
-		}	
+		}
+		
+		/// <inheritdoc cref="ComponentQueryExtensions.AssignComponentOrAdd{T}(GameObject, out T, Search)"/>
+		/// <seealso cref="ComponentQueryExtensions.AssignComponentOrAdd{T}(GameObject, out T, Search)"/>
+		protected void AssignComponentOrAdd<T>(out T variable, Search where = Search.InObjectOnly) where T : Component
+		{
+			gameObject.AssignComponentOrAdd(out variable, where);
+		}
+		
+		/// <inheritdoc cref="ComponentQueryExtensions.AssignIfAbsentOrAdd{T}(GameObject, ref T, Search)"/>
+		/// <seealso cref="ComponentQueryExtensions.AssignIfAbsentOrAdd{T}(GameObject, ref T, Search)"/>
+		protected bool AssignIfAbsentOrAdd<T>(ref T variable, Search where = Search.InObjectOnly) where T : Component
+		{
+			return gameObject.AssignIfAbsentOrAdd(ref variable, where);
+		}
+
+		/// <inheritdoc cref="Util.IfAbsentCompute{T}(ref T, Func{T})"/>
+		/// <seealso cref="Util.IfAbsentCompute{T}(ref T, Func{T})"/>
+		protected bool IfAbsentCompute<T>(ref T field, Func<T> getter)
+		{
+			return Util.IfAbsentCompute(ref field, getter);
+		}
 	}
 }

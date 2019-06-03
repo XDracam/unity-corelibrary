@@ -3,7 +3,7 @@ title: "The Unity CoreLibrary"
 author: [Cameron Reuschel]
 subject: "CoreLibrary"
 subtitle: "A collection of useful classes and extension methods for every Unity project"
-date: "Version 0.0.5"
+date: "Version 0.0.6"
 titlepage: true
 ...
 
@@ -25,7 +25,9 @@ When we started the [CaveLands](http://cavelands.de/) project, some of my collea
 
 After a semester of internal usage in the CaveLands project, other Games Engineering students showed interest in using the `CoreLibrary` as well. So we decided to open source the project under the MIT license for everyone to use.
 
-Fell free to add any issue, forgotten edge cases or feature wishes as an [Issue on GitHub](???).\
+This project is sponsored and maintained by the BII GmbH.
+
+Fell free to add any issue, forgotten edge cases or feature wishes as an [Issue on GitHub](https://github.com/XDracam/unity-corelibrary/issues).\
 I'll also gladly accept any pull requests.
 
 **Enjoy.**

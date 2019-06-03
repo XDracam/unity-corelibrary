@@ -26,7 +26,7 @@ namespace CoreLibrary
             {
                 var res = mapper(go);
                 if (!Util.IsNull(res)) return res;
-                if (go.transform.parent == null) return null;
+                if (Util.IsNull(go.transform.parent)) return null;
                 go = go.transform.parent.gameObject;
             }
         }
@@ -66,7 +66,7 @@ namespace CoreLibrary
         /// >The first non-null result from applying <paramref name="fn"/>
         /// to each game object in the search path, or null if nothing was found.
         /// </returns>
-        [CanBeNull] 
+        [CanBeNull]
         public static T Find<T>(this GameObject go, [NotNull] Func<GameObject, T> fn, Search where)
             where T : class
         {
@@ -84,6 +84,7 @@ namespace CoreLibrary
                         var parentSearch = SearchParents(go.transform.parent.gameObject, fn);
                         if (!Util.IsNull(parentSearch)) return parentSearch;
                     }
+
                     return SearchChildren(go, fn);
                 default:
                     throw new UnsupportedSearchException(where);
@@ -101,22 +102,29 @@ namespace CoreLibrary
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
         /// <typeparam name="T">The type of the component to find.</typeparam>
         /// <returns>true if any object in the specified search scope has a component of type T.</returns>
-        public static bool Is<T>(this GameObject go, Search where = Search.InObjectOnly) where T : Component
+        public static bool Is<T>(this GameObject go, Search where = Search.InObjectOnly) where T : class
         {
             var res = go.As<T>(where);
-            return res != null;
+            return !Util.IsNull(res);
         }
 
         /// <inheritdoc cref="Is{T}(GameObject, Search)"/>
-        public static bool Is<T>(this Transform tr, Search where = Search.InObjectOnly) where T : Component
+        public static bool Is<T>(this Component comp, Search where = Search.InObjectOnly) where T : class
         {
-            return tr.gameObject.Is<T>(where);
+            return comp.gameObject.Is<T>(where);
+        }
+        
+        /// <inheritdoc cref="Is{T}(GameObject, Search)"/>
+        public static bool Is<T>(this Collision col, Search where = Search.InObjectOnly) where T : class
+        {
+            return col.gameObject.Is<T>(where);
         }
 
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
         /// <typeparam name="T">The type of the component to find.</typeparam>
         /// <returns>The first component of type T found in the search scope or null if not found.</returns>
-        [CanBeNull] public static T As<T>(this GameObject go, Search where = Search.InObjectOnly) where T : Component
+        [CanBeNull]
+        public static T As<T>(this GameObject go, Search where = Search.InObjectOnly) where T : class
         {
             switch (where)
             {
@@ -132,6 +140,7 @@ namespace CoreLibrary
                         var parentSearch = go.transform.parent.GetComponentInParent<T>();
                         if (parentSearch != null) return parentSearch;
                     }
+
                     return go.GetComponentInChildren<T>();
                 default:
                     throw new UnsupportedSearchException(where);
@@ -139,15 +148,24 @@ namespace CoreLibrary
         }
 
         /// <inheritdoc cref="As{T}(GameObject, Search)"/>
-        [CanBeNull] public static T As<T>(this Transform tr, Search where = Search.InObjectOnly) where T : Component
+        [CanBeNull]
+        public static T As<T>(this Component comp, Search where = Search.InObjectOnly) where T : class
         {
-            return tr.gameObject.As<T>(where);
+            return comp.gameObject.As<T>(where);
         }
         
+        /// <inheritdoc cref="As{T}(GameObject, Search)"/>
+        [CanBeNull]
+        public static T As<T>(this Collision col, Search where = Search.InObjectOnly) where T : class
+        {
+            return col.gameObject.As<T>(where);
+        }
+
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
         /// <typeparam name="T">The type of the component to find.</typeparam>
         /// <returns>A lazily generated IEnumerable of all components of type T found in the search scope. Might be empty.</returns>
-        [NotNull] public static IEnumerable<T> All<T>(this GameObject go, Search where = Search.InObjectOnly) where T : Component
+        [NotNull]
+        public static IEnumerable<T> All<T>(this GameObject go, Search where = Search.InObjectOnly) where T : class
         {
             switch (where)
             {
@@ -160,17 +178,25 @@ namespace CoreLibrary
                 case Search.InWholeHierarchy:
                     var parentSearch = go.transform.parent != null
                         ? go.transform.parent.gameObject.GetComponentsInParent<T>()
-                        : new T[]{};
+                        : new T[] { };
                     return parentSearch.AndAlso(go.GetComponentsInChildren<T>());
                 default:
                     throw new UnsupportedSearchException(where);
             }
         }
-
+        
         /// <inheritdoc cref="All{T}(GameObject, Search)"/>
-        [NotNull] public static IEnumerable<T> All<T>(this Transform tr, Search where = Search.InObjectOnly) where T : Component
+        [CanBeNull]
+        public static IEnumerable<T> All<T>(this Component comp, Search where = Search.InObjectOnly) where T : class
         {
-            return tr.gameObject.All<T>(where);
+            return comp.gameObject.All<T>(where);
+        }
+        
+        /// <inheritdoc cref="All{T}(GameObject, Search)"/>
+        [CanBeNull]
+        public static IEnumerable<T> All<T>(this Collision col, Search where = Search.InObjectOnly) where T : class
+        {
+            return col.gameObject.All<T>(where);
         }
 
         /// <summary>
@@ -180,14 +206,34 @@ namespace CoreLibrary
         /// <param name="variable">A reference to the variable to be set.</param>
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
         /// <typeparam name="T">The type of the component to find.</typeparam>
-        /// <exception cref="Exception">If there was no component to be found in the specified search scope.</exception>
+        /// <exception cref="ComponentNotFoundException">
+        /// If there was no component to be found in the specified search scope.
+        /// </exception>
         public static void AssignComponent<T>(this GameObject go, out T variable, Search where = Search.InObjectOnly)
-            where T : Component
+            where T : class
         {
-            T found = go.As<T>();
-            if (found == null)
+            T found = go.As<T>(where);
+            if (Util.IsNull(found))
                 throw new ComponentNotFoundException(
                     "Failed to assign component of type " + typeof(T) + " to " + go + ".");
+
+            variable = found;
+        }
+
+        /// <summary>
+        /// Searches through the specified search scope until a component of type T is found
+        /// and assigns it to the passed variable reference. When no component could be found
+        /// in the specified scope, a new component of type T is added to the game object instead.
+        /// </summary>
+        /// <param name="variable">A reference to the variable to be set.</param>
+        /// <param name="where">Optional search scope if the object itself does not have the component.</param>
+        /// <typeparam name="T">The type of the component to find.</typeparam>
+        public static void AssignComponentOrAdd<T>(this GameObject go, out T variable,
+            Search where = Search.InObjectOnly)
+            where T : Component
+        {
+            T found = go.As<T>(where);
+            if (found == null) found = go.AddComponent<T>();
 
             variable = found;
         }
@@ -204,7 +250,7 @@ namespace CoreLibrary
         /// <returns>true if new value was assigned, false if variable already has a value.</returns>
         /// <exception cref="Exception">If there was no component to be found in the specified search scope.</exception>
         public static bool AssignIfAbsent<T>(this GameObject go, ref T variable, Search where = Search.InObjectOnly)
-            where T : Component
+            where T : class
         {
             if (variable != default(T)) // safer than null
             {
@@ -214,6 +260,31 @@ namespace CoreLibrary
             }
 
             go.AssignComponent(out variable, where);
+            return true;
+        }
+
+        /// <summary>
+        /// Searches through the specified search scope until a component of type T is found
+        /// and assigns it to the passed variable reference if and only iff the variable has
+        /// nothing assigned to it yet. When no component could be found in the specified scope,
+        /// a new component of type T is added to the game object instead.
+        /// </summary>
+        /// <param name="variable">A reference to the variable to be set.</param>
+        /// <param name="where">Optional search scope if the object itself does not have the component.</param>
+        /// <typeparam name="T">The type of the component to find.</typeparam>
+        /// <returns>true if new value was assigned, false if variable already has a value.</returns>
+        public static bool AssignIfAbsentOrAdd<T>(this GameObject go, ref T variable,
+            Search where = Search.InObjectOnly)
+            where T : Component
+        {
+            if (!Util.IsNull(variable))
+            {
+                Debug.Log(
+                    "Tried to assign component of type " + typeof(T) + " but field already had value " + variable, go);
+                return false;
+            }
+
+            go.AssignComponentOrAdd(out variable, where);
             return true;
         }
     }

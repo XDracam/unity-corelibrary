@@ -42,10 +42,13 @@ namespace CoreLibrary
 
         private void OnDestroy()
         {
-            Underlying.ForEach(u =>
+            if (Underlying != null)
             {
-                if (_q != null) _q.Deregister(u);
-            });
+                Underlying.ForEach(u =>
+                {
+                    if (_q != null) _q.Deregister(u);
+                });
+            }
         }
     }
 }

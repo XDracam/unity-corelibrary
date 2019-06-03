@@ -9,6 +9,7 @@ Assets/AssetStoreTools
 Assets/AssetStoreTools.meta
 
 Assets/documentation.pdf
+Assets/Plugins/Editor/JetBrains*
 
 # Jetbrains Rider dll 
 Plugins/Editor/JetBrains/

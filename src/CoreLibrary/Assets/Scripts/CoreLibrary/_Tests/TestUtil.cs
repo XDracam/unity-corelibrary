@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using CoreLibrary.Exceptions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 namespace CoreLibrary.Tests
 {
@@ -41,6 +43,54 @@ namespace CoreLibrary.Tests
             Object.Destroy(go);
             yield return null;
             Assert.IsTrue(Util.IsNull(go));
+        }
+        
+        private class TestClass { }
+
+        private void Assert_IfAbsentCompute_Default<T>(T referenceRes)
+        {
+            AssertIfAbsentCompute(default(T), referenceRes);
+        }
+
+        private void Assert_IfAbsentCompute_AlreadySet<T>(T referenceRes)
+        {
+            AssertIfAbsentCompute(referenceRes, referenceRes);
+        }
+
+        private void AssertIfAbsentCompute<T>(T defaultValue, T referenceRes)
+        {
+            var reference = defaultValue;
+            var referenceGetterCalled = false;
+            Func<T> referenceGetter = () =>
+            {
+                referenceGetterCalled = true;
+                return referenceRes;
+            };
+
+            Assert.That(Util.IfAbsentCompute(ref reference, referenceGetter), Is.EqualTo(referenceGetterCalled));
+            Assert.That(reference, Is.EqualTo(referenceRes));
+        }
+
+        [Test]
+        public void TestIfAbsentCompute()
+        {
+            // default reference type
+            Assert_IfAbsentCompute_Default(new TestClass());
+
+            // default value type
+            Assert_IfAbsentCompute_Default(new Vector3(1, 33, 7));
+
+            // default nullable type
+            Assert_IfAbsentCompute_Default<int?>(17);
+
+            // assigned reference type
+            Assert_IfAbsentCompute_AlreadySet(new TestClass());
+
+            // assigned value type
+            Assert_IfAbsentCompute_AlreadySet(new Vector3(11, 88, 0));
+
+            // assigned nullable type
+            Assert_IfAbsentCompute_AlreadySet<int?>(17);
         }
 
         // ReSharper disable all Unity.InefficientPropertyAccess

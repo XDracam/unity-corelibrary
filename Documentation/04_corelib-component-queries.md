@@ -4,16 +4,16 @@
 
 In regular Unity, one may retrieve a game object's components by using `gameObject.GetComponent<Renderer>()`. However, this is not only verbose but also not very flexible. For example, `GetComponent` only searches in the object itself, not in it's children or parents. For both use cases other, even more verbose methods, exist. If you want to search the whole hierarchy, you have to manually merge the child search and the parent search.
 
-In order to improve overall conciseness and readability, the core library provides a number of special query methods, which will be presented in the rest of this page. All of these methods have an optional parameter `Search where`, which lets you decide the scope of the search. `Search` is an enum containing the values `InObjectOnly`, `InChildren`, `InParents` and `InWholeHierarchy`. The default is always `InObjectOnly`. `InChildren` does a depth-first search through all the children until an instance of the requested component is found. `InParents` linearly traverses all parents until the scene root or until the requested component is found. `InWholeHierarchy` searches the parents first for efficiency reasons, then the children. In all cases, the object itself is searched first. For efficiency reasons, all searches redirect to their more verbose Unity counterparts.
+In order to improve overall conciseness and readability, the core library provides a number of special query methods, which will be presented in the rest of this page. All of these methods have an optional parameter `Search where`, which lets you decide the scope of the search. `Search` is an enum containing the values `InObjectOnly`, `InChildren`, `InParents` and `InWholeHierarchy`. The default is always `InObjectOnly`. `InChildren` does a depth-first search through all the children until an instance of the requested component is found. `InParents` linearly traverses all parents until the scene root or until the requested component is found. `InWholeHierarchy` searches the parents first for efficiency reasons, then the children. In all cases, the object itself is searched first. For efficiency reasons, all searches redirect to their more verbose Unity counterparts. The types which can be searched do *not* need to extend `UnityEngine.Component`, because we want to allow querying for interfaces as well.
 
 The rest of this page explains all queries by first presenting how it is usually done followed by a proper use case of the corresponding CoreLibrary query.
 
 ## `AssignComponent<T>` and `AssignIfAbsent<T>`
 
-Usually, finding other relevant components on the same game object and saving them into instance fields is a tedious but necessary task, since `GetComponent` can be an expensive call and should therefore not be called every frame. For this, we extend the `GameObject` class with two extension methods:
+Usually, finding other relevant components on the same game object and saving them into instance fields is a tedious but necessary task, since `GetComponent` can be an expensive call and should therefore not be called more than necessary. For this reason, we extend the `GameObject` class with two extension methods:
 
--  `void AssignComponent<T>(out T variable, Search where = Search.InObjectOnly) where T:Component`
--  `bool AssignIfAbsent<T>(ref T variable, Search where = Search.InObjectOnly) where T:Component`
+-  `void AssignComponent<T>(out T variable, Search where = Search.InObjectOnly) where T : class`
+-  `bool AssignIfAbsent<T>(ref T variable, Search where = Search.InObjectOnly) where T : class`
 
 Both of these methods are also handily available in `BaseBehaviour`.
 Consider the following code:
@@ -84,6 +84,14 @@ public class SampleComponent : BaseBehaviour
 
 `AssignIfAbsent` is particularly useful to avoid potential multiple calls to `AssignComponent`, which repeats the search every time. You can use it for loading a component lazily or *on demand*: Consider some object with an `Animator` that is only needed in one specific way of interacting with it. There are hundreds of these objects in the scene and you are only going to interact with very few of them, and with some of them multiple times. Now, calling `AssignComponent` somewhere in `Start` is wasted computing time 90% of the time. Calling `AssignComponent` every time the interaction happens may waste valuable resources on redundant searches. In this case `AssignIfAbsent` offers an efficient solution, as the cost of re-searching is only one very cheap `null`-check. The `bool` return value may be ignored in this case.
 
+Note that both of these methods could be implemented through `Util.IfAbsentCompute<T>(ref T field, Func<T> getter)` (See [the chapter about Utilities](Utilities)).
+
+## `AssignComponentOrAdd<T>` and `AssignIfAbsentOrAdd<T>`
+
+Sometimes, you are lazy. Or you want to make sure, that your script works under *all* circumstances, even if it cannot find a certain component in a child object. For this use cases, the CoreLibrary provides `AssignComponentOrAdd<T>` as well it's equaivalent `AssignIfAbsentOrAdd<T>`. 
+
+These methods behave exactly like their counterparts explained above, except that they add a new component of type `T` to the current game object if no suitable component could be found instead of throwing an exception. Another notable difference is the constraint on `T`: You cannot use an interface type for `T`, since unity requires a concrete `T : Component` in order to instantiate the new component and add it to the object.
+
 ## `Is<T>`, `As<T>` and `All<T>`
 
 Imagine you are an awesome flying space cat shooting your EMP laser eyes at multiple invading alien spacecraft stupidly flying in a straight row. All their antigravity drives deactivate and they fall to their deaths, exploding as they hit the hard and dry ground of the Arizona desert. **"What?"** - what?
@@ -113,17 +121,17 @@ foreach (var hit in shipsHit) hit.rigidbody.useGravity(true);
 var shipsHit = hits
     .Where(h => h.transform.Is<Spaceship>(Search.InWholeHierarchy));
 shipsHit
-    .Collect(s => s.transform.As<Animator>())
+    .Collect(s => s.As<Animator>())
     .ForEach(anim => anim.play("hit"));
 shipsHit
-    .SelectMany(s => s.transform.All<AntigravityEngine>(Search.InWholeHierarchy))
+    .SelectMany(s => s.All<AntigravityEngine>(Search.InWholeHierarchy))
     .ForEach(engine => engine.Explode());
 shipsHit.ForEach(hit => hit.rigidbody.useGravity(true));
 ```
 
 As you can see, `Is`, `As` and `All` make the code more concise but they make complex searches much easier as well! `.Collect` is a nice shortcut to lose the null checks. `.ForEach` depends on one's taste. I personally prefer it to an additional variable and a loop.
 
-All three methods are available as extensions to both `GameObject` and `Transform` classes for convenience.
+All three methods are available as extensions to `GameObject`, any `Component` including `Transform` as well as `Collision` for convenience.
 
 ## Find
 

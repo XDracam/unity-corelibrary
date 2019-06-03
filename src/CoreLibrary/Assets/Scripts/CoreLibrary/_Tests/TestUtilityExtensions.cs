@@ -25,6 +25,42 @@ namespace CoreLibrary.Tests
         }
 
         [Test]
+        public void GetChildren_WhenModifiedWhileIterating_BehavesProperly()
+        {
+            var go = new GameObject().transform;
+            var c1 = new GameObject().transform;
+            c1.SetParent(go.transform);
+
+            var uut = go.GetChildren().GetEnumerator();
+            
+            // insert at start before iterating
+            var beforeAll = new GameObject().transform;
+            beforeAll.SetParent(go);
+            beforeAll.SetAsFirstSibling();
+
+            uut.MoveNext();
+            Assert.That(uut.Current, Is.EqualTo(beforeAll));
+            
+            // insert before, expecting no changes at all
+            var neverSeen = new GameObject().transform;
+            neverSeen.SetParent(go);
+            neverSeen.SetAsFirstSibling();
+
+            uut.MoveNext();
+            Assert.That(uut.Current, Is.EqualTo(c1));
+            
+            // insert after last, expecting it to be found as well
+            var last = new GameObject().transform;
+            last.SetParent(go);
+            last.SetAsLastSibling();
+
+            Assert.That(uut.MoveNext(), Is.True);
+            Assert.That(uut.Current, Is.EqualTo(last));
+            
+            uut.Dispose();
+        }
+
+        [Test]
         public void TestIsNull()
         {
             string s = null;
