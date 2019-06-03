@@ -127,25 +127,5 @@ namespace CoreLibrary
 
             return list;
         }
-
-        /// <summary>
-        /// Same as <cref see="IEnumerable.TakeWhile{T}" />, but it can optionally also include the element that violated the predicate and therefore can be inclusive
-        /// </summary>
-        public static IEnumerable<T> TakeWhile<T>(this IEnumerable<T> source, Func<T, bool> predicate, bool inclusive)
-        {
-            foreach(T item in source)
-            {
-                if(predicate(item)) 
-                {
-                    yield return item;
-                }
-                else
-                {
-                    if(inclusive) yield return item;
-
-                    yield break;
-                }
-            }
-        } 
     }
 }
