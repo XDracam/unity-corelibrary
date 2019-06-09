@@ -7,7 +7,7 @@ using UnityEngine;
 namespace CoreLibrary
 {
     /// <summary>
-    /// Author: Cameron Reuschel
+    /// Author: Cameron Reuschel, Daniel Götz
     /// <br/><br/>
     /// The class holding all nonspecific extension methods in the core library.
     /// </summary>
@@ -159,5 +159,40 @@ namespace CoreLibrary
 
             return list;
         }
+        
+        //===========================
+        //===== MISC EXTENSIONS =====
+        //===========================
+        
+        #if UNITY_2018_3_OR_NEWER
+        
+        /// <summary>
+        /// This feature is available from C#7 and upwards. It can be used by developers
+        /// using Unity 2018.3 or newer with the Scripting Runtime Version 4.x or higher.
+        /// This method allows KeyValuePairs to be deconstructed into tuples implicitly.
+        /// In most cases, this function does not even have to be called directly.
+        /// <example>
+        /// <code>
+        /// var myKvp = new KeyValuePair&lt;int,int&gt;();
+        /// // ...
+        /// var (key, value) = myKvp; // This was not possible before
+        /// </code>
+        /// This is really useful in foreach loops iterating over dictionaries
+        /// <code>
+        /// var myDict = new Dictionary&lt;int,int&gt;();
+        /// // ...
+        /// foreach(var (key, value) in myDict) // This was also not possible
+        /// {
+        ///     // ...
+        /// }
+        /// </code>
+        /// </example>
+        /// </summary>
+        public static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> kvp, out TKey key, out TValue value) {
+            key = kvp.Key;
+            value = kvp.Value;
+        }
+
+        #endif
     }
 }
