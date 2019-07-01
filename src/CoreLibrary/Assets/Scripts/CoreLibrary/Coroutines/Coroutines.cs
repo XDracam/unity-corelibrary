@@ -220,6 +220,36 @@ namespace CoreLibrary
         }
 
         /// <summary>
+        /// Turns a block of code into a coroutine that never yields anything.
+        /// As soon as the coroutine is started, the passed <see cref="CodeBlock"/>
+        /// is executed and the coroutine ends.
+        /// <br/><br/>
+        /// You can use this as a code-to-coroutine conversion for a function
+        /// that expects a coroutine, but should work immediately instead. 
+        /// </summary>
+        /// <param name="code">
+        /// The code that is executed as soon as this coroutine is started.
+        /// </param>
+        /// <returns>
+        /// A coroutine that terminates immediately after executing the passed code.
+        /// </returns>
+        public static IEnumerator Do([NotNull] CodeBlock code)
+        {
+            code();
+            yield break;
+        }
+        
+        /// <summary>
+        /// The empty coroutine. Just immediately calls <code>yield break;</code>.
+        /// This is basically the 'null' for constructing coroutines: You can use
+        /// this when code expects a coroutine, but you do not need any behavior.
+        /// </summary>
+        /// <returns>
+        /// An IEnumerator that does nothing, not even wait.
+        /// </returns>
+        public static IEnumerator DoNothing() { yield break; }
+
+        /// <summary>
         /// Repeats the passed <see cref="YieldInstruction"/> either the
         /// specified number of times or forever if not specified.
         /// <br/><br/>

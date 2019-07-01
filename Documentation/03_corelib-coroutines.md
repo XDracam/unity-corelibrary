@@ -828,3 +828,27 @@ BrokenYieldWhile(a(), () => _running).Start();
 ```
 
 In the above case the Unity runtime executes the whole `b()` coroutine before `BrokenYieldWhile` checks the condition and has a chance to interrupt. This means that, unintuitively, `DoSomethingDangerous` is actually called. And for this reason, we need `.Flatten()`.
+
+## Working with code that expects `IEnumerable`s
+
+Sometimes you write or use some code that expects an `IEnumerable` and wraps it or executes it in a context. Maybe the function that expects an `IEnumerable` just exists for code reuse or unit testing. But now you want the function to work *immediately* and not over time. What do you do? 
+
+```cs
+// -- before
+
+public void DoSomethingThenExecute(IEnumerator coroutine) { ... }
+
+private IEnumerator DoSomething() 
+{
+    DoSomethingInstant();
+    yield break;
+}
+
+DoSomethingThenExecute(DoSomething());
+```
+
+Great, now you just wrote an extra private method, which requires space and an explicit name, just to wrap your `DoSomething` method to use it in `DoSomethingThenExecute`. A naive solution might be to thing "Wait, if my `DoSomethingThenExecute` method sometimes does not need behaviour over time, then why not write a second version?". I am going to omit a concrete example here, but you can see that this approach yields either a copy-pasted block of code with a single line changed or you're just moving the above problem somewhere else. 
+
+The CoreLibrary provides an overload of the static `IEnumerator Do(CodeBlock code)` method, which takes a block of code and wraps it into a coroutine, which does nothing and returns immediately. This is basically the `DoSomethingInstant` pattern from above, generalized to whatever you might need.
+
+"But what if I want to do nothing?" - well, you could always write `Do(() => {})`, but that is ugly. So the CoreLibrary also provides `IEnumerator DoNothing()`, which does exactly as it says: absolutely nothing. But by using this instead of `null` for your `IEnumerator` argument, you can save some null checks, thus reducing code complexity and increasing maintainability, all while explicitly stating that you *want* that code to do nothing. 

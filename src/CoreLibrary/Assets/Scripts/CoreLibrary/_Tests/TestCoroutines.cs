@@ -350,5 +350,27 @@ namespace CoreLibrary.Tests
             Assert.IsTrue(first);
             Assert.IsTrue(second);
         }
+
+        [Test]
+        public void CodeBlockDo_WhenStarted_CompletesImmediately()
+        {
+            var codeCalled = false;
+            var afterwardsCalled = false;
+
+            Coroutines.Do(() => codeCalled = true).Afterwards(() => afterwardsCalled = true).Start();
+            
+            Assert.That(codeCalled, Is.True);
+            Assert.That(afterwardsCalled, Is.True);
+        }
+
+        [Test]
+        public void DoNothing_WhenStarted_CompletesImmediately()
+        {
+            var afterwardsCalled = false;
+
+            Coroutines.DoNothing().Afterwards(() => afterwardsCalled = true).Start();
+            
+            Assert.That(afterwardsCalled, Is.True);
+        }
     }
 }
