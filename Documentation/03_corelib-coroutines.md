@@ -511,8 +511,8 @@ public class DoorOpenState
 
 // later in behaviour
 private DoorOpenState _doorState = new DoorOpenState();
-private bool IsOpening => _openState.IsOpening();
-private bool IsClosing => _openState.IsClosing();
+private bool IsOpening => _openState.IsOpening;
+private bool IsClosing => _openState.IsClosing;
 
 public void Open() 
 {
@@ -585,7 +585,7 @@ This is the reason why the `afterwards` parameter is always optional.
 
 ## DoBefore
 
-Imagine a use case where you wanted to execute some code before using `RepeatWhile` or `.YieldWhile`, regardless of whether the passed condition is initially false or not. When you want to immediately start the constructed coroutine, that is no problem:
+Imagine you just built a lovely coroutine using `RepeatWhile` or `.YieldWhile` - you want it to be interruptable from outside by simply setting a `bool isRunning` field to `false`. But because you don't want the coroutine to terminate immediately, you need to set `isRunning = true` before executing the code. As the following examples show, you'd need extra code just to add that single line, which might not be in your interest:
 
 ```cs
 private bool _isRunning = false;
@@ -628,7 +628,7 @@ For completeness, the CoreLibrary provides
 ```cs
 IEnumerable Do(YieldAction action)
 ```
-A `YieldAction` is a function which takes no arguments and returns something, whatever it is. `Do` turns this function into a coroutine: It executes the function and `yield return`s the result of the function. The use of `Do` can mostly be avoided by using the right design. 
+A `YieldAction` is a function which takes no arguments and returns something, whatever it is. `Do` turns this function into a coroutine: It executes the function and `yield return`s the result of the function. The use of `Do` can mostly be avoided by using the right design, but it still exists in case anyone needs it.
 
 *`Do` is a constructor for a singleton coroutine: One that only generates a single result.*
 
