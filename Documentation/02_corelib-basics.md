@@ -136,6 +136,24 @@ Sometimes you want to set more than one value in a single call. This might not b
 material.color = material.color.With(r: 0.3f, a: 0.5f); // g and b left as-is
 ```
 
+## Vector transformation and selection
+
+Many people who program shaders are familiar with *vector swizzling* - an easy way to reorder vector coordinates:
+
+```cs
+vec4 color = origColor.xzyw; // swap y and z
+```
+
+This was a requested feature and makes reshuffling, shrinking and expanding vectors a lot more comfortable. For this reason, the CoreLibrary provides all possible permutations of `xyzw` and substrings as *extension methods* on vector, and the corresponding versions *for colors* as well:
+
+```cs
+Vector3 myVec = new Vector3(1,2,3);
+Vector2 foo = transform.position.yx(); // (2, 1)
+Vector4 bar = foo.xyyx();              // (2, 1, 1, 2)
+```
+
+These methods are intentionally written in lowercase letters so that they conform to what people are used to in Unity. Don't worry, nobody had to write all these by hand - they were auto-generated using a small script. 😉
+
 ## LINQ extensions
 
 LINQ is a lovely framework that brings the *mapreduce* paradigm to C# in an efficient and SQL-ish way. With it you can replace almost any
