@@ -130,6 +130,8 @@ loop once and for all, which increases the expressibility of your code while mak
 
 As great as LINQ is, some heavy use cases are still missing.
 
+`Enumerable.IsEmpty()` and `Enumerable.IsNotEmpty()` provide a convenient and readable way to check for emptyness without using `.Count` or the not very expressive `.Any()` method.
+
 `Enumerable.ForEach(Action<T> action)` replaces the need to save the result of a lovely chain of LINQ calls into a variable only to write a clunky `foreach` loop. It's not for everyone, but I think it can make the code more overviewable.
 
 `Enumerable.Collect(Func<T, TRes> mapping)` is equal to \

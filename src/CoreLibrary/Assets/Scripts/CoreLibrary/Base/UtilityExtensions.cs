@@ -122,7 +122,13 @@ namespace CoreLibrary
         {
             return sequence.SelectMany(mapping).Where(v => v != null);
         }
-
+        
+        /// <returns>True if the specified sequence contains no elements, false otherwise.</returns>
+        public static bool IsEmpty<T>(this IEnumerable<T> sequence) { return !sequence.Any(); }
+        
+        /// <returns>False if the specified sequence contains no elements, true otherwise.</returns>
+        public static bool IsNotEmpty<T>(this IEnumerable<T> sequence) { return sequence.Any(); }
+        
         /// <summary>
         /// Merges two sequences in a LINQ call chain without having to drop out of it.
         /// When the concrete types of the two sequences differ, then one must specify
