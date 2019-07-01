@@ -48,6 +48,9 @@ namespace CoreLibrary
             foreach(var rend in allRenderer) rend.enabled = state;
             foreach(var col in allCollider) col.enabled = state;
             foreach(var col in allCollider2D) col.enabled = state;
+
+            var queryables = gameObject.All<QueryableBaseBehaviour>(Search.InChildren);
+            foreach (var q in queryables) q.Queryable.enabled = state;
         }
         
         /// <summary>

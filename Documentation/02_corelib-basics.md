@@ -42,7 +42,7 @@ This is implemented using the `Util.[VectorProxy]` class.
 
 ## Utility extensions
 
-`SetPerceivable(bool state)` redirects to the extension method on `GameObject` and enables you to make an object *unperceivable*, meaning that all `Collider`s and `Renderer`s are inactive, but the object itself isn't. This allows audio tracks and coroutines played on the object to *end properly*. However, lifecycle methods such as `Update()`, `FixedUpdate()` etc. are still called, causing a potential performance loss when overusing.
+`SetPerceivable(bool state)` redirects to the extension method on `GameObject` and enables you to make an object *unperceivable*, meaning that all `Collider`s, `Renderer`s and `Queryable`s in the object and all its children are inactive, but the object itself isn't. This allows audio tracks and coroutines played on the object to *end properly*. However, lifecycle methods such as `Update()`, `FixedUpdate()` etc. are still called, causing a potential performance loss when overusing. **This is a simple convenience method and is not meant to be overused!**
 
 `foo.IsNull()` is a more safe version of `foo == null`, which accounts for Unity's custom override of the `==` operator on components. You should only use this when working with a generic type `T` that does *not always* extend `UnityEngine.Component` or some subclass of it. For more information see the section [Generic Null Check].
 
