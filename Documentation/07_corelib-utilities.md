@@ -6,6 +6,22 @@ The `Util` class contains a number of static methods, which are not specific to 
 using static CoreLibrary.Util;
 ```
 
+## Construct an IEnumerable from constants with `Seq`
+
+Sometimes people write methods which take an `IEnumerable<T>` parameter and do something with this sequence. And sometimes, you want to call these methods with a constant number of arguments. The most concise solution to do this without the CoreLibrary is the following:
+
+```cs
+DoStuffToAllOf(new [] { arg1, arg2, arg3 });
+```
+
+But this array construction looks a bit weird and may be confusing for C#-beginners. So instead you can now write:
+
+```cs
+DoStuffToAllof(Seq(arg1, arg2, arg3));
+```
+
+Less characters and the focus now lies and what is passed and not how it is passed. 
+
 ## Modulus
 
 The `Util.Mod(int x, int m)` function defines a mathematically correct modulus. You see, the result of the `%` operator can be negative when one of it's arguments is negative. However, this is often not what you want. So instead of writing `(x % m + m) % m` every time (thereby confusing readers), the CoreLibrary provides this utility. The `Mod` function is positive for every `x`, as long as `m > 0`. For now, this only works for `int`s, as there is no robust way to check for "a type which provides the `%` operator" during compile time.

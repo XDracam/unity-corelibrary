@@ -15,6 +15,15 @@ namespace CoreLibrary
     /// </summary>
     public static class Util
     {
+
+        /// <summary>
+        /// Constructs an IEnumerable from a variable number of arguments.
+        /// This is an alternative to writing <code>new [] { a, b, c }</code>
+        /// when the number of arguments for an IEnumerable parameter is known.
+        /// </summary>
+        /// <returns>An IEnumerable consisting of all the passed values.</returns>
+        [Pure] public static IEnumerable<T> Seq<T>(params T[] args) { return args; }
+        
         /// <summary>
         /// Mathematically correct modulus.
         /// Always positive for any x as long as m > 0.
