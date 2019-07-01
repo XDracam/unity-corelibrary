@@ -182,6 +182,34 @@ namespace CoreLibrary.Tests
             AssertChildrenFound(Search.InWholeHierarchy);
         }
 
+        public void TestFindSiblings()
+        {
+            var p1 = new GameObject();
+            var uut = NewGameObject(p1);
+            var s1 = NewGameObject(p1);
+            var s2 = NewGameObject(p1);
+            var c1 = NewGameObject(uut);
+            var c2 = NewGameObject(s1);
+    
+            // test that parent and children are ignored
+            p1.AddComponent<BoxCollider>();
+            Assert.That(uut.Find(obj => obj.As<Collider>(), Search.InSiblings), Is.Null);
+
+            c1.AddComponent<BoxCollider>();
+            c2.AddComponent<BoxCollider>();
+            Assert.That(uut.Find(obj => obj.As<Collider>(), Search.InSiblings), Is.Null);
+            
+            // test early stop
+            var toFind = s1.AddComponent<BoxCollider>();
+            s2.AddComponent<BoxCollider>();
+            Assert.That(uut.Find(obj => obj.As<Collider>(), Search.InSiblings), Is.SameAs(toFind));
+            
+            // test object itself searched if no parent
+            uut.transform.SetParent(null);
+            var selfCollider = uut.AddComponent<BoxCollider>();
+            Assert.That(uut.Find(obj => obj.As<Collider>(), Search.InSiblings), Is.EqualTo(selfCollider));
+        }
+
         [Test]
         public void TestAllQuery()
         {

@@ -357,7 +357,8 @@ namespace CoreLibrary.Tests
             var codeCalled = false;
             var afterwardsCalled = false;
 
-            Coroutines.Do(() => codeCalled = true).Afterwards(() => afterwardsCalled = true).Start();
+            Coroutines.Do((Coroutines.CodeBlock) (() => codeCalled = true))
+                .Afterwards(() => afterwardsCalled = true).Start();
             
             Assert.That(codeCalled, Is.True);
             Assert.That(afterwardsCalled, Is.True);

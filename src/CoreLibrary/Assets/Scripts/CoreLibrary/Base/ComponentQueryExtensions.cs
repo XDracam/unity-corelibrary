@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CoreLibrary.Exceptions;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -44,6 +45,18 @@ namespace CoreLibrary
             return null;
         }
 
+        private static T SearchSiblings<T>(GameObject go, Func<GameObject, T> mapper) where T : class
+        {
+            if (go.transform.parent == null) return mapper(go);
+            foreach (var child in go.transform.parent.GetChildren())
+            {
+                var res = mapper(child.gameObject);
+                if (!Util.IsNull(res)) return res;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// This method enables you to search an object's hierarchy
         /// for a more complex conditions. The passed function <paramref name="fn"/>
@@ -78,6 +91,8 @@ namespace CoreLibrary
                     return SearchChildren(go, fn);
                 case Search.InParents:
                     return SearchParents(go, fn);
+                case Search.InSiblings:
+                    return SearchSiblings(go, fn);
                 case Search.InWholeHierarchy:
                     if (go.transform.parent != null)
                     {
@@ -134,6 +149,14 @@ namespace CoreLibrary
                     return go.GetComponentInChildren<T>();
                 case Search.InParents:
                     return go.GetComponentInParent<T>();
+                case Search.InSiblings:
+                    if (go.transform.parent == null) return go.As<T>();
+                    foreach (var child in go.transform.parent.GetChildren())
+                    {
+                        var component = child.GetComponent<T>();
+                        if (component != null) return component;
+                    }
+                    return null;
                 case Search.InWholeHierarchy:
                     if (go.transform.parent != null)
                     {
@@ -175,6 +198,9 @@ namespace CoreLibrary
                     return go.GetComponentsInParent<T>();
                 case Search.InChildren:
                     return go.GetComponentsInChildren<T>();
+                case Search.InSiblings:
+                    if (go.transform.parent == null) return go.All<T>();
+                    return go.transform.parent.GetChildren().Collect(c => c.As<T>()).ToArray();
                 case Search.InWholeHierarchy:
                     var parentSearch = go.transform.parent != null
                         ? go.transform.parent.gameObject.GetComponentsInParent<T>()
