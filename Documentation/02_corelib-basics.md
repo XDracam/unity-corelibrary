@@ -66,7 +66,7 @@ children.Select(...)...;
 
 In order to efficiently chain further LINQ queries (such as `.Find`, `.Where` etc.) the method returns an `IEnumerable<T>`, which is only **traversable once**.
 
-## Vector extensions
+## Vector and Color extensions
 
 Imagine you have an object and you want to always have it at the same Y position as some other object. For some reason, you also want it's Z position to double every 2 seconds. Let's look at this in regular Unity:
 
@@ -117,6 +117,24 @@ private void Update()
 ```
 
 This makes working with vectors in an immutable (= **safer**) manner a lot more comfortable. Note that methods such as `v.WithXY(w.x, w.y)` are *not* provided, as that would be equal to `w.WithZ(v.z)`. In cases where two coordinates are not from the same source, keeping the `With?` calls separate causes more understandable code.
+
+These utility methods also work for `Color`s: You'll never need an intermediate variable just to set an alpha value anymore!
+
+```cs
+// -- before
+var col = material.color;
+col.a = 0.5f;
+material.color = col;
+
+// -- after
+material.color = material.color.WithA(0.5f);
+```
+
+Sometimes you want to set more than one value in a single call. This might not be very useful for vectors, but it is for colors. So the CoreLibrary provides a generic `.With(float? r, float? g, float? b, float? a)` method and a similar one for colors. This method makes use of the named parameter feature of C#, which enables you to only specify some of the arguments. All others default to `null`: 
+
+```cs
+material.color = material.color.With(r: 0.3f, a: 0.5f); // g and b left as-is
+```
 
 ## LINQ extensions
 
