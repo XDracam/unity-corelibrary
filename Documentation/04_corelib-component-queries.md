@@ -133,6 +133,41 @@ As you can see, `Is`, `As` and `All` make the code more concise but they make co
 
 All three methods are available as extensions to `GameObject`, any `Component` including `Transform` as well as `Collision` for convenience.
 
+## `Is<T>(out T result, Search where)`
+
+C#7 onwards allow something very nice when working with types:
+
+```cs
+// before C#7
+
+var foo = obj as ISomeInterface;
+if (foo != null) { ... }
+
+// with C#7
+
+if (obj is ISomeInterface foo) { ... }
+```
+
+This new feature allows you to assign the result of the successful cast directly to a new local variable and use it, thus reducing lines of code and complexity while better expressing what is actually happening. So why not for the CoreLibrary?
+
+```cs
+// -- 'before'
+
+var foo = gameObject.As<ISomeInterface>();
+if (foo != null) { ... }
+
+// -- now
+ISomeInterface foo;
+if (gameObject.Is<ISomeInterface>(out foo)) { ... }
+```
+
+This is not much of an improvement in terms of lines, but it gets much better when using another new C#7 feature: declaring out variables where they are used.
+
+```cs
+// with C#7
+if (gameObject.Is<ISomeInterface>(out var foo)) { ... }
+```
+
 ## Find
 
 In case `Is<T>` and `As<T>` are not enough for your needs, the CoreLibrary provides the `gameObject.Find<T>(Func<GameObject, T> fn, Search where)` method. The `gameObject` is traversed in the order defined by the `Search where` parameter. For each object in the hierarchy that is traversed, `fn` is called. When `fn` yields a result `!= null`, then the search is completed and the result is returned.

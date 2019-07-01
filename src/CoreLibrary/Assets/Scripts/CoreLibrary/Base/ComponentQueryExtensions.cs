@@ -121,28 +121,31 @@ namespace CoreLibrary
         /// if(gameObject.Is&lt;Collider&gt;(out result))
         ///     result.trigger = true;
         /// </code>
-        /// After C# 7
+        /// With C# 7
         /// <code>
         /// if(gameObject.Is&lt;Collider&gt;(out var result))
         ///     result.trigger = true;
         /// </code>
         /// </example>
-        /// <param name="result">If the component T has been found, it will be assigned to this variable</param>
+        /// <param name="result">A component of type T if found, null otherwise.</param>
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
         /// <typeparam name="T">The type of the component to find.</typeparam>
         /// <returns>true if any object in the specified search scope has a component of type T.</returns>
-        public static bool Is<T>(this GameObject go, out T result, Search where = Search.InObjectOnly) where T : class{
+        public static bool Is<T>(this GameObject go, out T result, Search where = Search.InObjectOnly) where T : class 
+        {
             result = go.As<T>(where);
             return !Util.IsNull(result);
         }
 
         /// <inheritdoc cref="Is{T}(UnityEngine.GameObject,out T,CoreLibrary.Search)" />
-        public static bool Is<T>(this Component comp, out T result, Search where = Search.InObjectOnly) where T : class{
+        public static bool Is<T>(this Component comp, out T result, Search where = Search.InObjectOnly) where T : class 
+        {
             return comp.gameObject.Is<T>(out result, where);
         }
 
         /// <inheritdoc cref="Is{T}(UnityEngine.GameObject,out T,CoreLibrary.Search)" />
-        public static bool Is<T>(this Collision col, out T result, Search where = Search.InObjectOnly) where T : class {
+        public static bool Is<T>(this Collision col, out T result, Search where = Search.InObjectOnly) where T : class 
+        {
             return col.gameObject.Is<T>(out result, where);
         }
 
