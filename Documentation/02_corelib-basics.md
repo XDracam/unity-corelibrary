@@ -152,6 +152,8 @@ As great as LINQ is, some heavy use cases are still missing.
 
 `Enumerable.ForEach(Action<T> action)` replaces the need to save the result of a lovely chain of LINQ calls into a variable only to write a clunky `foreach` loop. It's not for everyone, but I think it can make the code more overviewable.
 
+`Enumerable.ForEach(Action<T, int> action)` also passes the index of the current element in the sequence, in case that it is needed for the computation. This can replace many `for (var i = 0; i < length; ++i)` loops.
+
 `Enumerable.Collect(Func<T, TRes> mapping)` is equal to \
 `Enumerable.Select(mapping).Where(v => v != null)`. It applies the `mapping` function to every element in the Enumerable, yielding a new Enumerable with the results. It also filters out every `null` value. Useful for `Select`ing with a mapping that may fail, such as `v.As<Whatever>()`.
 

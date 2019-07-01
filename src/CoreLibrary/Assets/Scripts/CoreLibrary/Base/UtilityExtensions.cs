@@ -100,6 +100,18 @@ namespace CoreLibrary
         {
             foreach (var item in sequence) action(item);
         }
+        
+        /// <summary>
+        /// Executes the specified action with side effects for each element in this sequence,
+        /// thereby consuming the sequence if it was only iterable once. The action also takes
+        /// the index of the element as second argument, thus allowing you to potentially replace
+        /// simple counting for loops with this function.
+        /// </summary>
+        public static void ForEach<T>(this IEnumerable<T> sequence, Action<T, int> action)
+        {
+            var i = 0;
+            foreach (var item in sequence) action(item, i++);
+        }
 
         /// <summary>
         /// Equal to calling <code>.Select(mapping).Where(v => v != null)</code>
