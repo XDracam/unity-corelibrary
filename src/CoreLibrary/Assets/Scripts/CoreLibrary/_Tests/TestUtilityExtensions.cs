@@ -127,6 +127,17 @@ namespace CoreLibrary.Tests
             Assert.AreEqual(sum, 3 + 5 + 7 + 11);
             CollectionAssert.AreEqual(orig, uut);
         }
+
+        [Test]
+        public void TestCountingForEach()
+        {
+            var sum = 0;
+            var orig = new List<int>{3,5,7,11};
+            var uut = new List<int>{3,5,7,11};
+            uut.ForEach((v, i) => sum += v * (i + 1));
+            Assert.AreEqual(sum, 3 * 1 + 5 * 2 + 7 * 3 + 11 * 4);
+            CollectionAssert.AreEqual(orig, uut);
+        }
         
         [Test]
         public void TestAndAlso()

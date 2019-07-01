@@ -94,7 +94,7 @@ private void Update()
 }
 ```
 
-In order to get rid of this repetitive hassle once for all, we provide extension methods for both `Vector2` and `Vector3` to either set or transform any individual coordinate without modifying the original vector:
+In order to get rid of this repetitive hassle once for all, we provide extension methods for both `Vector2`, `Vector3` and `Vector4` to either set or transform any individual coordinate without modifying the original vector:
 
 ```cs
 private IEnumerator Start()
@@ -118,7 +118,7 @@ private void Update()
 
 This makes working with vectors in an immutable (= **safer**) manner a lot more comfortable. Note that methods such as `v.WithXY(w.x, w.y)` are *not* provided, as that would be equal to `w.WithZ(v.z)`. In cases where two coordinates are not from the same source, keeping the `With?` calls separate causes more understandable code.
 
-These utility methods also work for `Color`s: You'll never need an intermediate variable just to set an alpha value anymore!
+*These utility methods also work for `Color`s:* You'll never need an intermediate variable just to set an alpha value anymore!
 
 ```cs
 // -- before
