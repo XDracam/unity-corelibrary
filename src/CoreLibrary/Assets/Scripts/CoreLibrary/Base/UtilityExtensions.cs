@@ -35,6 +35,47 @@ namespace CoreLibrary
         }
 
         /// <summary>
+        /// Invokes the given <code>action</code> if <code>value.IsNull()</code> is <code>false</code>.
+        /// If it is not, it invokes <code>elseAction</code> (if given).
+        /// This method is designed as a replacement for patterns such as <code>value?.action()</code>.
+        /// </summary>
+        public static void IfNotNull<T>(
+            this T value, 
+            Action<T> action, 
+            Action elseAction = null
+        ) where T : class {
+            if (!value.IsNull()) action(value);
+            else if (elseAction != null) elseAction();
+        }
+
+        /// <summary>
+        /// Invokes the given <code>action</code> if <code>value.IsNull()</code> is <code>false</code>,
+        /// returning a <code>TResult</code>. If it is not, it invokes <code>elseAction</code>.
+        /// This method is designed as a replacement for patterns such as <code>value?.action() ?? elseAction()</code>.
+        /// </summary>
+        public static TResult IfNotNull<T, TResult>(
+            this T value, 
+            Func<T, TResult> action, 
+            Func<TResult> elseAction
+        ) where T : class {
+            if (!value.IsNull()) return action(value);
+            else return elseAction();
+        }
+
+        /// <summary>
+        /// Invokes the given <code>action</code> if <code>value.IsNull()</code> is <code>false</code>,
+        /// returning a <code>TResult</code>. If it is not, it returns <code>elseResult</code>.
+        /// This method is designed as a replacement for patterns such as <code>TResult result = value?.action();</code>
+        /// </summary>
+        public static TResult IfNotNull<T, TResult>(
+            this T value, 
+            Func<T, TResult> action, 
+            TResult elseResult = default(TResult)
+        ) where T : class {
+            return IfNotNull(value, action, () => elseResult);
+        }
+
+        /// <summary>
         /// A game object is not perceivable if it has no active collider and renderer.
         /// Used instead of deactivation to enable coroutines and sounds to continue to play.
         /// </summary>
