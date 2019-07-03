@@ -47,6 +47,36 @@ Since type `T` is not constrained (e.g. by a `where T : Component`), the compile
 
 In order to achieve proper null checks for unconstrained generic types which might be components, the CoreLibrary provides the `Util.IsNull<T>(T value)` function, which works for any type and has a special fix for Unity `Component`s built in.
 
+## Working with Unity `null`
+
+In Unity, there are two cases for some `UnityEngine.Object foo` when `foo == null`: Either the field has no value yet (C# null) or the referenced object has been destroyed using `Object.Destroy(foo)`. In the latter case, the reference to `foo` is set to a special state which allows it to be treated as `null` by comparisons. However, this causes problems when working with the `?.` and `??` syntacic constructs that come with C#, since a destroyed object is never really `null`. This causes unexpected bugs, especially since there is no warning (unless you are using JetBrains Rider as IDE). 
+
+To enable you to use a style similar to `?.` and `??`, the CoreLibrary provides the `obj.IsNotNull(Action<T> action, Action elseAction)` extension method and derivates, so you can rewrite your potentially buggy code now:
+
+```cs
+// -- before
+
+var foo = bar?.baz();
+if (foo == null) {
+    foo = doSomethingWithFoo(foo);
+}
+if (foo != null) {
+    foo2 = foo.baz();
+} else handleErrorCase();
+
+var foo3 = foo2?.bar() ?? quoz;
+
+// -- after
+
+var foo = bar.IfNotNull(b => b.baz());
+
+foo.IfNotNull(f => foo2 = f.baz(), elseAction: handleErrorCase);
+
+foo3 = foo2.IfNotNull(f => f.bar(), elseResult: quoz);
+```
+
+To preserve the semantics of chaining `?.`s and ending with a `??`, the *else* case is called either when the value itself is null or the result of the action (if there is one) is null. These extension methods work for anything, so if you are using an unconstrained generic parameter `T` which can be a unity object, then using `.IfNotNull` is safer than using null-logic directly.
+
 ## `Object.SafeDestroy()`
 
 Unity [strongly discourages you](https://docs.unity3d.com/ScriptReference/Object.DestroyImmediate.html) from using `Object.DestroyImmediate(obj)` instead of `Object.Destroy(obj)`. However, when writing editor code, the delayed destruction caused by `Destroy(obj)` is never executed.

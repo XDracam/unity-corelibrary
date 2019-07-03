@@ -140,7 +140,7 @@ material.color = material.color.With(r: 0.3f, a: 0.5f); // g and b left as-is
 
 Many people who program shaders are familiar with *vector swizzling* - an easy way to reorder vector coordinates:
 
-```cs
+```cpp
 vec4 color = origColor.xzyw; // swap y and z
 ```
 
