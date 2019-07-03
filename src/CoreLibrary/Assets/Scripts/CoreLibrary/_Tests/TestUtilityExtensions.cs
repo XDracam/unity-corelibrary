@@ -171,6 +171,91 @@ namespace CoreLibrary.Tests
             // shuffles at all
             CollectionAssert.AreNotEqual(l1, l1.Shuffled(rand1));
         }
+
+        [Test]
+        public void IfNotNull_WhenNotNull_ThenActionCalled()
+        {
+            var foo = new object();
+
+            var actionResult = 0;
+            var elseCalled = false;
+
+            foo.IfNotNull(f => actionResult = foo.GetHashCode(), () => elseCalled = true);
+            
+            Assert.That(actionResult, Is.EqualTo(foo.GetHashCode()));
+            Assert.That(elseCalled, Is.False);
+        }
+        
+        [Test]
+        public void IfNotNull_Unity_WhenNotNull_ThenActionCalled()
+        {
+            var foo = new GameObject();
+
+            var actionResult = 0;
+            var elseCalled = false;
+
+            foo.IfNotNull(f => actionResult = foo.GetHashCode(), () => elseCalled = true);
+            
+            Assert.That(actionResult, Is.EqualTo(foo.GetHashCode()));
+            Assert.That(elseCalled, Is.False);
+        }
+        
+        [Test]
+        public void IfNotNull_WhenNull_ThenElseCalled()
+        {
+            object foo = null;
+
+            var actionCalled = false;
+            var elseCalled = false;
+
+            foo.IfNotNull(f => actionCalled = true, () => elseCalled = true);
+            
+            Assert.That(actionCalled, Is.False);
+            Assert.That(elseCalled, Is.True);
+        }
+        
+        [Test]
+        public void IfNotNull_Unity_WhenNull_ThenElseCalled()
+        {
+            var foo = new GameObject();
+            Object.DestroyImmediate(foo);
+
+            var actionCalled = false;
+            var elseCalled = false;
+
+            foo.IfNotNull(f => actionCalled = true, () => elseCalled = true);
+            
+            Assert.That(actionCalled, Is.False);
+            Assert.That(elseCalled, Is.True);
+        }
+        
+        [Test]
+        public void IfNotNull_WhenActionNull_ThenElseReturned()
+        {
+            object foo = null;
+
+            var elseResult = new object();
+
+            var res = foo.IfNotNull(f => null, () => elseResult);
+            
+            Assert.That(res, Is.SameAs(elseResult));
+        }
+        
+        [Test]
+        public void IfNotNull_Unity_WhenActionNull_ThenElseReturned()
+        {
+            var foo = new GameObject();
+            Object.DestroyImmediate(foo);
+
+            var destroyed = new GameObject();
+            Object.DestroyImmediate(destroyed);
+
+            var elseResult = new object();
+
+            var res = foo.IfNotNull(f => destroyed, () => elseResult);
+            
+            Assert.That(res, Is.SameAs(elseResult));
+        }
         
     }
 }

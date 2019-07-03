@@ -7,7 +7,7 @@ using UnityEngine;
 namespace CoreLibrary
 {
     /// <summary>
-    /// Author: Cameron Reuschel
+    /// Author: Cameron Reuschel, David Schantz
     /// <br/><br/>
     /// The class holding all nonspecific extension methods in the core library.
     /// </summary>
@@ -32,6 +32,62 @@ namespace CoreLibrary
         public static bool IsNull<T>(this T value) where T : class
         {
             return Util.IsNull(value);
+        }
+
+        /// <summary>
+        /// Invokes the given <code>action</code> when the value is <b>not</b>
+        /// null using <code>Util.IsNull</code>, returning a <code>TResult</code>.
+        /// If the value itself is null however, it calls <code>elseAction</code> if present.
+        /// <br/>
+        /// This method is designed as a replacement for patterns such as <code>value?.action() ?? elseAction()</code>.
+        /// <br/>
+        /// See <a href="https://blogs.unity3d.com/2014/05/16/custom-operator-should-we-keep-it/">
+        /// this blog post</a> for more details about Unity's custom null handling. 
+        /// </summary>
+        public static void IfNotNull<T>(
+            this T value, 
+            Action<T> action, 
+            Action elseAction = null
+        ) where T : class {
+            if (!value.IsNull()) action(value);
+            else if (elseAction != null) elseAction();
+        }
+
+        /// <summary>
+        /// Invokes the given <code>action</code> when the value is <b>not</b> null using <code>Util.IsNull</code>,
+        /// returning a <code>TResult</code>. If the value itself or the result of the action is null however,
+        /// it returns the result of <code>elseAction</code>.
+        /// <br/>
+        /// This method is designed as a replacement for patterns such as <code>value?.action() ?? elseAction()</code>.
+        /// <br/>
+        /// See <a href="https://blogs.unity3d.com/2014/05/16/custom-operator-should-we-keep-it/">
+        /// this blog post</a> for more details about Unity's custom null handling. 
+        /// </summary>
+        public static TResult IfNotNull<T, TResult>(
+            this T value, 
+            Func<T, TResult> action, 
+            Func<TResult> elseAction
+        ) where T : class {
+            if (!Util.IsNull(value))
+            {
+                var res = action(value);
+                if (!Util.IsNull(res))
+                    return res;
+            }
+            return elseAction();
+        }
+
+        /// <summary>
+        /// Invokes the given <code>action</code> if <code>value.IsNull()</code> is <code>false</code>,
+        /// returning a <code>TResult</code>. If it is not, it returns <code>elseResult</code>.
+        /// This method is designed as a replacement for patterns such as <code>TResult result = value?.action();</code>
+        /// </summary>
+        public static TResult IfNotNull<T, TResult>(
+            this T value, 
+            Func<T, TResult> action, 
+            TResult elseResult = default(TResult)
+        ) where T : class {
+            return IfNotNull(value, action, () => elseResult);
         }
 
         /// <summary>
