@@ -236,5 +236,53 @@ namespace CoreLibrary
 
             return list;
         }
+
+        /// <summary>
+        /// Sorts the sequence, yielding a <b>new</b> sorted IEnumerable.
+        /// Uses List.Sort().
+        /// <br/>If the passed IEnumerable is only iterable once it is consumed in the process.
+        /// </summary>
+        public static IEnumerable<T> Sorted<T>(this IEnumerable<T> sequence)
+        {
+            var list = sequence.ToList();
+            list.Sort();
+            return list;
+        }
+
+        /// <summary>
+        /// Sorts the sequence, yielding a <b>new</b> sorted IEnumerable.
+        /// Uses List.Sort(IComparer comparer).
+        /// <br/>If the passed IEnumerable is only iterable once it is consumed in the process.
+        /// </summary>
+        public static IEnumerable<T> Sorted<T>(this IEnumerable<T> sequence, IComparer<T> comparer)
+        {
+            var list = sequence.ToList();
+            list.Sort(comparer);
+            return list;
+        }
+
+        /// <summary>
+        /// Sorts the sequence, yielding a <b>new</b> sorted IEnumerable.
+        /// Uses List.Sort(Comparison comparison).
+        /// <br/>If the passed IEnumerable is only iterable once it is consumed in the process.
+        /// </summary>
+        public static IEnumerable<T> Sorted<T>(this IEnumerable<T> sequence, Comparison<T> comparison)
+        {
+            var list = sequence.ToList();
+            list.Sort(comparison);
+            return list;
+        }
+
+        /// <summary>
+        /// Sorts the sequence, yielding a <b>new</b> sorted IEnumerable.
+        /// Uses List.Sort(int index, int count, IComparer comparer).
+        /// <br/>If the passed IEnumerable is only iterable once it is consumed in the process.
+        /// </summary>
+        public static IEnumerable<T> Sorted<T>(this IEnumerable<T> sequence, int index, int count, IComparer<T> comparer)
+        {
+            var list = sequence.ToList();
+            list.Sort(index, count, comparer);
+            return list;
+        }
     }
 }
