@@ -1,3 +1,5 @@
+Update: This project has not been abandoned. We at the BII GmbH are planning to rewrite this and to adda ton of new features that we are already using internally, including many non-Unity C# utilities. We'd like to have this done by the end of the year, but I cannot guarantee anything. This will probably be a new project with specific modules.
+
 # The Unity CoreLibrary
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
