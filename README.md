@@ -1,11 +1,13 @@
 Update: This project has not been abandoned. We at the BII GmbH are planning to rewrite this and to adda ton of new features that we are already using internally, including many non-Unity C# utilities. We'd like to have this done by the end of the year, but I cannot guarantee anything. This will probably be a new project with specific modules.
 
+Update 2: CoreLibrary 2 is scheduled for late 2021, with significantly more features.
+
 # The Unity CoreLibrary
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 The *CoreLibrary* is a collection of classes and extension methods you didn't even know you were missing. It provides generic, well-tested, well-documented components such as a Pool implementation and object queries as well as numerous extension methods and utilities that make your everyday code cleaner and more type safe.
 
-This project is being developed primarily at the Univeristy of Würzburg, Germany for the [Cavelands](http://cavelands.de/) student project. It remains free and open source for all Games Engineering students as well as anyone else who wants to use it. This project is sponsored, maintained and used by the BII GmbH.
+This project has been developed primarily at the Univeristy of Würzburg, Germany. It remains free and open source for all Games Engineering students as well as anyone else who wants to use it. This project is sponsored, maintained and used by the BII GmbH.
 
 The main goal is to encourage the *good sides* of functional programming:
 
