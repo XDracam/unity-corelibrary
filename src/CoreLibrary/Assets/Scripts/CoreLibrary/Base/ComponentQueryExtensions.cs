@@ -148,6 +148,23 @@ namespace CoreLibrary
         {
             return col.gameObject.Is<T>(out result, where);
         }
+        
+        /// <inheritdoc cref="Is{T}(UnityEngine.GameObject,out T,CoreLibrary.Search)" />
+        public static bool Is<TSource, TResult>(this TSource obj, out TResult ret, Search where = Search.InObjectOnly) 
+            where TResult : class 
+        {
+            // `obj is TResult t` only works with C# 7.1 or higher.
+            if (obj is TResult) {
+                ret = obj as TResult;
+                return true;
+            }
+            // Same as above.
+            if (obj is Component) {
+                return (obj as Component).Is<TResult>(out ret, where);
+            }
+            ret = null;
+            return false;
+        }
 
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
         /// <typeparam name="T">The type of the component to find.</typeparam>
@@ -168,6 +185,14 @@ namespace CoreLibrary
         public static bool Is<T>(this Collision col, Search where = Search.InObjectOnly) where T : class
         {
             return col.gameObject.Is<T>(where);
+        }
+        
+        /// <inheritdoc cref="Is{T}(GameObject, Search)"/>
+        public static bool Is<TSource, TResult>(this TSource obj, Search where = Search.InObjectOnly)
+            where TResult : class
+        {
+            TResult unused;
+            return obj.Is<TSource, TResult>(out unused, where);
         }
 
         /// <param name="where">Optional search scope if the object itself does not have the component.</param>
